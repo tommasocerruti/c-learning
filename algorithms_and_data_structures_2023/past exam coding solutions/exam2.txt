@@ -1,0 +1,177 @@
+// SOLUTION 1
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void shift(int *arr, int n, int p){	
+	int *temp, i, j;
+	temp=malloc(n*sizeof(int));
+	if (temp==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	// in case of shifts that would ask the array to rotate multiple times
+	p=p%n;
+	// equivalence between negative and positive shifts
+	if (p<0)
+		p=n+p;
+	for (i=0;i<n-p;i++)
+		temp[i]=arr[p+i];
+	for (j=i;j<n;j++)
+		temp[j]=arr[j-i];
+	for (i=0;i<n;i++)
+		arr[i]=temp[i];
+	free(temp);
+}
+
+//comment: should implement separately the left or right shift and store only the first elements to be shifted
+
+//SOLUTION 2
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct list_s list_t;
+typedef struct matr_s matr_t;
+
+struct list_s{
+	float value;
+	int c;
+	list_t *next;	
+}
+
+//note: we need to include the paramenter of the column, if not we are going to lose it
+//moreover it is needed also for the insertion of values
+
+struct matr_s{
+	int nr;
+	int nc;
+	list_t *arr;	
+}
+
+//note: the dimension of arr should be dynamically allocated to sizeof(nr*sizeof(list_t))
+
+void mat_insert(matr_t *mat, int r, int c, float value){
+	list_t *node, head, next;
+	node=malloc(sizeof(list_t));
+	if (node==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	node->value=value;
+	node->c=c;
+	head=mat[r];
+	//first element in the row
+	if (head==NULL){
+		mat[r]=node;
+		return;
+	}
+	//check if it is going to be the head	
+	else if (head->c>node->c){
+		node->next=head;
+		mat[r]=node;
+		return;
+	}
+	next=head->next;
+	while(next!=NULL){
+		if (next->c>node->c){
+			node->next=next;
+			head->next=node;
+			return;
+		}
+		next=next->next;
+		head=head->next;
+	}
+	head->next=node;
+	return;	
+}
+
+//comment: should implement both list_t and node_t structs and list insertion is to improved
+
+//SOLUTION 3
+
+#include <stdio.h>
+#include <stdlib.h>
+
+//arrangements with repetitions
+
+int isvalid(char *solution, int k);
+void print(char *solution, int k, int count);
+
+void arr_rep(char *vowels, char *solution, int level, int k, int *count){
+	if (level>=k){
+		if (isvalid(solution,vowels,k))
+			print(solution,k,(*count)++);
+		return;
+	}
+	int i;
+	for (i=0;i<5;i++){
+		solution[level]=vowels[i];
+		arr_rep(vowels,solution,level+1,k,count);
+	}
+	return;
+}
+
+int isvalid(char *solutions, int k){
+	int check[5];
+	for (i=0;i<k;i++)
+		check[solutions[i]-'A']++;
+	for (i=0;i<5;i++){
+		if (check[i]==0)
+			return 0;
+	}
+	return 1;
+}
+
+
+void print(char *solutions, int k, int count){
+	int i;
+	fprintf(stdout,"\nSolution #%d: ",count);
+	for (i=0;i<k;i++)
+		fprintf(stdout,"%c",solution[i]);	
+	fprintf(stdout,"\n");
+	return;	
+}
+
+//comment: this can be improved by checking before at the recursion level {}
+
+//CORRECTION exercise 2
+
+typedef struct node_s{
+	int col;
+	float f;
+	struct node_s *next
+} node_t;
+
+typedef struct list_s{
+	int num_el;
+	node_t *next;
+} list_t;
+
+typedef struct matrix_s{
+	int nr;
+	int nc;
+	list_t *rows;
+} matrix_t;
+
+//IMPROVEMENT exercise 3
+void aeiou(char *sol, char alfa[], int taken[], int position, int reps_allowed, int n_char){
+	int i;
+	if (position==n_char){
+		print...
+		return;
+	}
+	for (i=0;i<5;i++){
+		if (!taken[i]){
+			taken[i]=1;
+			sol[position]=alfa[i];
+			aeiou(sol,alfa,taken,position+1,reps_allowed,n_char);
+			taken[i]=0;
+		}
+		else if (taken[i] && reps_allowed>0){
+			sol[position]=alfa[i];
+			aeiou(sol,alfa,taken,position+1,reps_allowed-1,n_char);
+		}
+	}
+}
+{}

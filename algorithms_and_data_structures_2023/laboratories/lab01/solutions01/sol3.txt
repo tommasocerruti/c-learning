@@ -1,0 +1,166 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define MAX  31
+
+/* structure declaration */
+typedef struct {
+  char *name;
+  int id;
+  int laps;
+  float *times;
+  float avg;
+} cyclist_t;
+
+/* function prototypes */
+cyclist_t *read_file(int *, int *);
+void printList(cyclist_t *, int);
+void printDetails(cyclist_t *, int);
+void printBest(cyclist_t *, int);
+
+/*
+ *  main program
+ */
+int main(void) {
+  char cmd[MAX];
+  int i, num, best;
+  cyclist_t *team = read_file(&num, &best);
+
+  do {
+    fprintf(stdout, "\nAvailable commands:\n");
+    fprintf(stdout, "list           - list all the cyclists' data\n");
+    fprintf(stdout, "details <name> - show the details of a single cyclist\n");
+    fprintf(stdout, "best           - show the details of the best cyclist\n");
+    fprintf(stdout, "stop           - quit the program\n\n");
+
+    fprintf(stdout, "Command? ");
+    scanf("%s", cmd);
+    if (strcmp(cmd, "list") == 0) {
+      printList(team, num);
+    } else if (strcmp(cmd, "details") == 0) {
+      printDetails(team, num);
+    } else if (strcmp(cmd, "best") == 0) {
+      printBest(team, best);
+    } else if (strcmp(cmd, "stop") != 0) {
+      fprintf(stderr, "Invalid command\n");
+    }
+  } while (strcmp(cmd, "stop") != 0);
+
+  for(i=0; i<num; i++) {
+    free(team[i].name);
+    free(team[i].times);
+  }
+  free(team);
+
+  fprintf(stdout, "End of program.\n");
+
+  return EXIT_SUCCESS;
+}
+
+/*
+ *  load the input file
+ */
+cyclist_t *read_file(int *num_ptr, int *best) {
+  cyclist_t *team;
+  char name[MAX];
+  float best_avg=-1;
+  int i, j;
+  FILE* fp;
+
+  fprintf(stdout, "Input file name: ");
+  scanf("%s", name);
+  fp = fopen(name, "r");
+  if (fp == NULL) {
+    fprintf(stderr, "File open error (file=%s).\n", name);
+    exit(EXIT_FAILURE);
+  }
+
+  fscanf(fp, "%d", num_ptr);
+  team = (cyclist_t *)malloc((*num_ptr) * sizeof(cyclist_t));
+  if (team == NULL) {
+    fprintf(stderr, "Memory allocation error.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  for (i=0; i<*num_ptr; i++) {
+    fscanf(fp, "%s %d %d", name, &team[i].id, &team[i].laps);
+
+    team[i].name = strdup(name);
+    team[i].times = (float *)malloc(team[i].laps * sizeof(float));
+    if (team[i].name==NULL || team[i].times==NULL) {
+      fprintf(stderr, "Memory allocation error.\n");
+      exit(EXIT_FAILURE);
+    }
+    team[i].avg = 0;
+
+    for (j=0; j<team[i].laps; j++) {
+      fscanf(fp, "%f", &team[i].times[j]);
+      team[i].avg += team[i].times[j];
+    }
+
+    team[i].avg /= team[i].laps;
+    if (best_avg<0 || team[i].avg <= best_avg) {
+      best_avg = team[i].avg;
+      *best = i;
+    }
+  }
+
+  fclose(fp);
+  return team;
+}
+
+/*
+ *  list all the team components
+ */
+void printList(cyclist_t *team, int num) {
+  int i;
+
+  fprintf (stdout, "Number of cyclists: %d\n", num);
+  for (i=0; i<num; i++) {
+    fprintf(stdout, "- Name: %s\n", team[i].name);
+    fprintf(stdout, "  Id  : %d\n", team[i].id);
+    fprintf(stdout, "  Laps: %d\n", team[i].laps);
+  }
+}
+
+/*
+ *  list the details of a single cyclist
+ */
+void printDetails(cyclist_t *team, int num) {
+  int i, j, found=0;
+  char name[MAX];
+
+  scanf("%s", name);
+  for (i=0; i<num && !found; i++) {
+    if (strcmp(name, team[i].name) == 0) {
+      fprintf(stdout, " Id   : %d\n", team[i].id);
+      fprintf(stdout, " Laps : %d\n", team[i].laps);
+      fprintf(stdout, " Times: ");
+      for (j=0; j<team[i].laps; j++) {
+        fprintf(stdout, "%.2f ", team[i].times[j]);
+      }
+      fprintf(stdout, "\n");
+      found = 1;
+    }
+  }
+  if (!found) {
+    fprintf(stdout, "Cyclist not found.\n");
+  }
+}
+
+/*
+ *  list the details of a best cyclist
+ */
+void printBest(cyclist_t *team, int best) {
+  int j;
+
+  fprintf(stdout, " Best cyclist: %s\n", team[best].name);
+  fprintf(stdout, " Id   : %d\n", team[best].id);
+  fprintf(stdout, " Laps : %d\n", team[best].laps);
+  fprintf(stdout, " Times: ");
+  for (j=0; j<team[best].laps; j++) {
+    fprintf(stdout, "%.2f ", team[best].times[j]);
+  }
+  fprintf(stdout, "\n Average time: %.2f\n", team[best].avg);
+}

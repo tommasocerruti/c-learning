@@ -1,0 +1,148 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define EXIT_FAILURE 1
+#define ORDER_ALPH 0
+#define ORDER_NUM 1
+#define TAIL 0
+#define HEAD 0
+
+typedef struct emp_s{
+    char *lastname, *firstname, id[17];
+    int workhours;
+    struct emp_s *next;
+} emp_t;
+
+emp_t *read_file(FILE *, int *);
+emp_t *insert_node(emp_t *, emp_t *);
+void write(emp_t *, int);
+void destroy(emp_t *);
+
+int main(int argc, char *argv[]){
+    int num_emps;
+    emp_t *emps;
+    FILE *fp;
+    fp=fopen(argv[1],"r");
+    if (fp==NULL)
+        return EXIT_FAILURE;
+    emps=read_file(fp, &num_emps);
+    fclose(fp);
+    write(emps, num_emps);
+    destroy(emps);
+    return 0;
+}
+
+emp_t *insert_node(emp_t *head, emp_t *node){
+    emp_t *tmp=head;
+    if (head==NULL)
+        head=node;
+    else{
+#if(HEAD)
+        node->next=head;
+        head=node;
+#endif
+#if (TAIL)
+        while(tmp->next!=NULL)
+            tmp=tmp->next;
+        tmp->next=node;
+        node->next=NULL;
+#endif
+#if (ORDER_ALPH)
+        if (strcmp(node->lastname,head->lastname)<0){
+            //head insertion
+            node->next=head;
+            head=node;
+        }
+        else{
+            emp_t *p=tmp->next;
+            while((p!=NULL)&&(strcmp(node->lastname,p->lastname)>0)){
+                p=p->next;
+                tmp=tmp->next;
+            }
+            if (p==NULL){
+                //tail insertion
+                tmp->next=node;
+                node->next=NULL;
+            }
+            else{
+                //in order insertion
+                tmp->next=node;
+                node->next=p;
+            }
+        }
+#endif
+#if ORDER_NUM
+        if (node->workhours < head->workhours){
+            //head insertion
+            node->next=head;
+            head=node;
+        }
+        else{
+            emp_t *p=tmp->next;
+            while((p!=NULL)&&(node->workhours > p->workhours)){
+                p=p->next;
+                tmp=tmp->next;
+            }
+            if (p==NULL){
+                //tail insertion
+                tmp->next=node;
+                node->next=NULL;
+            }
+            else{
+                //in order insertion
+                tmp->next=node;
+                node->next=p;
+            }
+        }
+#endif
+    }
+    return head;
+}
+
+emp_t *read_file(FILE *fp, int *num_emps){
+    int weeks, i, j, days, hours;
+    emp_t *head=NULL, *node;
+    char lastname[20], firstname[20], id[17];
+    while(fscanf(fp,"%s %s %s %d",lastname,firstname,id,&weeks)!=EOF){
+        node=malloc(sizeof(emp_t));
+        if (node==NULL)
+            exit(EXIT_FAILURE);
+        node->lastname=strdup(lastname);
+
+        node->firstname=strdup(firstname);
+
+        strcpy(node->id,id);
+        node->workhours=0;
+        for (i=0;i<weeks;i++){
+            fscanf(fp,"%*d%d",&days);
+            for (j=0;j<days;j++){
+                fscanf(fp,"%d",&hours);
+                node->workhours+=hours;
+            }
+
+        }
+        head=insert_node(head,node);
+        (*num_emps)++;
+    }
+    return head;
+}
+
+void write(emp_t *emps, int num_emps){
+    emp_t *node=emps;
+    while(node!=NULL){
+        fprintf(stdout, "%s %s %s worked %d hours\n",node->lastname,node->firstname,node->id,node->workhours);
+        node=node->next;
+    }
+}
+
+void destroy(emp_t *emps){
+    emp_t *tmp;
+    while(emps!=NULL){
+        free(emps->lastname);
+        free(emps->firstname);
+        tmp=emps;
+        emps=emps->next;
+        free(tmp);
+    }
+}

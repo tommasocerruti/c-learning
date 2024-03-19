@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/tomma/OneDrive/Desktop/reading_material/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/simple_encryption/main.c
+stdio.h
+-
+

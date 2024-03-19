@@ -1,0 +1,5 @@
+- error checking malloc
+- freeing everything dynamically allocated
+- pointer to everything that is aimed to be modified
+- returning a pointer or a reference in the argument
+- if I input a pointer to a pointer, define a local variable and work on it instead

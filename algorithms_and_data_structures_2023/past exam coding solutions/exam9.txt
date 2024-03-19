@@ -1,0 +1,201 @@
+{}
+
+//PROBLEM 1
+
+char *char_erase(char *str, int *pos){
+	int i=-1,j,n=strlen(str);
+	while(pos[++i]!=-1){
+		if (pos[i]-1<n){
+			for (j=pos[i]-1;j<n;j++)
+				str[j]=str[j+1];
+			n--;
+		}
+	}
+	return str;
+}
+
+store in 
+
+
+
+typedef struct matr_s matr_t;
+typedef struct row_s row_t;
+typedef struct col_s col_t;
+
+struct matr_s{
+	int r, c;
+	row_t *rows;
+}
+
+struct row_s{
+	int r;
+	col_t *cols;
+	row_t *next;
+}
+
+struct col_s{
+	int c;
+	float val;
+	col_t *next;
+}
+
+
+//PROBLEM 2
+
+row_t *create_row(int r, int c, float val);
+col_t *create_col(int c, float val);
+
+void mat_insert(matr_t *m, int r, int c, float value){
+	
+	row_t *rows;
+	col_t *cols;
+
+	//check if the element is already present
+	rows=mat->rows;
+	while(rows!=NULL){
+		if (rows->r>r)
+			break;
+		else if (rows->r==r){
+			cols=rows->cols;
+			while(cols!=NULL){
+				if (cols->c>c)
+					break;
+				else if (cols->c==c){
+					cols->val=value;
+					return;
+				}
+				else
+					cols=cols->next
+			}
+			break;
+		}	
+		else
+			rows=rows->next;
+	}
+	
+	//this code is reached only if the element is not present
+	row_t *tmpr;
+	col_t *tmpc;
+	rows=mat->rows;
+		
+	//the row r does not exits
+	if (rows==NULL || rows->r>r){
+		tmpr=NULL;
+		if (rows!=NULL)
+			tmpr=rows->next;
+		rows=create_row(r,c,val);
+		rows->next=tmpr;
+		return;
+	}	
+	
+	//the row r exits
+	while(rows->next!=NULL && rows->next->r<r)
+		rows=rows->next;
+	if (rows->cols==NULL){//according to the standards, this scenario is impossible, but to be safe we put it
+		rows->cols=create_col(c,val);
+		rows->cols->next=NULL;
+		return;
+	}
+	else{
+		cols=rows->cols;
+		while(cols->next!=NULL && cols->next->c<c)
+			cols=cols->next;
+		tmpc=cols->next;
+		cols->next=create_col(c,val);
+			
+	}	
+
+}
+
+
+//PROBLEM 3 {}
+
+//problem: split str in all possible ways into n subtrings of sizes specified by length[0],...,length[n-1]; print them
+
+
+int string_split_r(char *str, int n,int *length, int *result, int ind, int len);
+
+void string_split(char *str, int n, int *length){
+
+	int *result;
+	int i;
+
+	result=malloc((strlen(s)+1)*sizeof(int));
+	if (result==NULL){...}
+
+	for (i=0;i<strlen(str);i++){
+		result[i]=0;
+	}
+
+	string_split_r(str,n,length,result,0,0);
+
+	free(result);
+	
+	return;
+	
+}
+
+// the recursive function recurs n times, at each recursion selects any possible string length
+// arrangements with repetitions --> selectìts each length with repetition until the sum of the selected is larger than the original string
+// if larger -> backtracks, if equal -> prints
+
+#define ALL 1
+
+// to be general I used pre-compiler statements based on the aim of the user
+
+int string_split_r(char *str, int n,int *length, int *result, int ind, int len){
+	int i, j, k;
+
+	//termination condition with no solution
+	if (len>strlen(str))
+		return 0;
+
+	//termination condition with solution
+	if (len==strlen(str)){
+		for (i=k=0;i<ind;i++){//ind indicates the number of substrings
+			for (j=0;j<result[i];j++){//result stores the lengths of the substrings for the solution
+				fprintf(stdout,"%c",str[k]);//prints the substrings, i.e. the characters going from k to k+result[i]-1
+				k++;	
+			}
+			fprintf(stdout," ");
+		}
+		fprintf(stdout,"\n");
+		return 1;
+	}
+
+	//try to use all substrings lengths
+	for (i=0;i<n;i++){
+		result[ind]=length[i];
+
+#if ALL
+//if all solutions are desired
+		string_split_r(str,n,length,result,ind+1,len+length[i]);
+
+
+#else
+//if only one solution is desired
+		if (string_split_r(str,n,length,result,ind+1,len+length[i]))
+			return 1;
+
+#endif
+
+	}
+	return 0;
+}
+
+
+
+
+//RANDOM
+void insertionSort(int *A, int n){
+	inti i, j, key;
+	for (i=1;i<n;i++){
+		i=j-1;
+		while(j>=0 && A[j]>key){
+			A[j+1]=A[j];
+			j--;
+		}
+		A[j+1]=key;
+	}
+
+}

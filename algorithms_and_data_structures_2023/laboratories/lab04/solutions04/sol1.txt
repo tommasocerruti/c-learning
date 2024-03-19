@@ -1,0 +1,274 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 20+1
+
+/* structure declaration */
+typedef struct m m_t;
+typedef struct p p_t;
+
+struct m {
+    char *name;
+    char *id;
+    p_t *p;
+    m_t *next;
+};
+
+struct p {
+    char *name;
+    int price;
+    m_t *m;
+    p_t *next;
+};
+
+m_t *load_manufacturer (char *);
+void load_products (m_t *head,char *);
+void printAll (m_t *);
+void search (m_t *, char *);
+m_t *searchMan(m_t *,char *);
+void show_by_budget(m_t *, int);
+p_t *add_sorted(p_t *, p_t *);
+void destroy (m_t *);
+void destroyProds(p_t *ptr);
+
+/*
+ *  main program
+ */
+int
+main (
+        int argc,
+        char *argv[]
+)
+{
+    m_t *head;
+    char m[MAX];
+
+    head = load_manufacturer(argv[1]);
+    load_products(head,argv[2]);
+
+    printAll(head); // just a summary of what was loaded
+
+    // check for third parameter (budget)
+    if( argc == 4 ) {
+        int budget = atoi(argv[3]);
+        show_by_budget(head, budget);
+    }
+
+    do {
+        fprintf (stdout, "Manufacturer: ");
+        scanf ("%s", m);
+
+        if (strcmp (m, "end") != 0) {
+            search (head, m);
+        }
+    } while (strcmp (m, "end") != 0);
+
+    destroy (head);
+
+    return EXIT_SUCCESS;
+}
+
+void show_by_budget(m_t *head, int money) {
+    // I will build a temporary list of products, ordered by price, selecting only those with price < budget
+    p_t *list = NULL;
+    m_t *mptr = head; // manufacturer pointer
+    p_t *pptr; // product pointer
+    while(mptr != NULL ) {
+        pptr = mptr->p;
+        while(pptr != NULL) {
+            if( pptr->price <= money ) {
+                // add to list
+                list = add_sorted(list, pptr);
+            }
+            pptr = pptr->next;
+        }
+        mptr = mptr->next;
+    }
+    // list has been filled, show it
+    printf("List of products with price <= %d\n", money);
+    pptr = list;
+    while(pptr != NULL ) {
+        printf("%s %s %d\n",pptr->m->name, pptr->name, pptr->price);
+        pptr = pptr->next;
+    }
+    // free the list
+    pptr = list;
+    while(pptr != NULL) {
+        p_t *next = pptr->next;
+        free(pptr);
+        // NOTE that I do not free pptr->name
+        pptr = next;
+    }
+}
+
+p_t *add_sorted(p_t *head, p_t *ref) {
+
+    // clone the ref element
+    p_t *new = (p_t *) malloc(sizeof(p_t));
+    *new = *ref;
+    new->next = NULL;
+
+    if( head == NULL)
+        return new;
+
+    // check against first element
+    if( new->price < head->price ) {
+        // insert at head position
+        new->next = head;
+        head = new;
+        return head;
+    }
+
+    // new will not be the first element
+    p_t *ptr = head;
+    while( ptr->next != NULL ) {
+        if( new->price < ptr->next->price ) {
+            // insertion
+            new->next = ptr->next;
+            ptr->next = new;
+            return head;
+        }
+        ptr = ptr->next;
+    }
+    // if we reach this point, the new element has not yet been inserted
+    ptr->next = new;
+
+    return head;
+}
+
+m_t *load_manufacturer (
+        char *filename1
+)
+{
+    m_t *head, *man;
+    FILE *fp;
+    char str1[MAX], str2[MAX];
+
+    head = NULL;
+    fp = fopen (filename1, "r");
+    while (fscanf (fp, "%s%s", str1, str2) != EOF) {
+        man = (m_t *) malloc (sizeof (m_t));
+        if (man == NULL) {
+            fprintf (stdout, "Allocation error.\n");
+            exit (1);
+        }
+        man->name = strdup (str1);
+        man->id = strdup (str2);
+        man->p = NULL;
+        man->next = head;
+        head = man;
+    }
+    fclose(fp);
+    return head;
+}
+
+void load_products(m_t *head,char *filename) {
+    char str1[MAX];
+    char str2[MAX];
+    int price;
+    p_t *prod;
+    m_t *man;
+
+    FILE *fp = fopen (filename, "r");
+    while (fscanf (fp, "%s%s%d", str1, str2, &price) != EOF) {
+        prod = (p_t *) malloc (sizeof (p_t));
+        if (prod == NULL) {
+            fprintf (stdout, "Allocation error.\n");
+            exit (1);
+        }
+        prod->name = strdup (str2);
+        prod->price = price;
+        man = searchMan(head, str1);
+        if (man != NULL) {
+            prod->next = man->p;
+            man->p = prod;
+            prod->m = man;
+        } else {
+            fprintf (stderr, "There is no such a brand ...  Rule-out model\n");
+        }
+    }
+    fclose(fp);
+}
+
+m_t *searchMan(m_t *head,char *id) {
+    m_t *ptr = head;
+    while (ptr!=NULL) {
+        if (strcmp (ptr->id, id)==0)
+            return ptr;
+        ptr = ptr->next;
+    }
+    return NULL;
+}
+
+void printAll (
+        m_t *head
+)
+{
+    m_t *tmp1;
+    p_t *tmp2;
+
+    tmp1 = head;
+    while (tmp1 != NULL) {
+        fprintf (stdout, "%s %s\n", tmp1->name, tmp1->id);
+        tmp2 = tmp1->p;
+        while (tmp2 != NULL) {
+            fprintf (stdout, "  - %s %d\n", tmp2->name, tmp2->price);
+            tmp2 = tmp2 ->next;
+        }
+        tmp1 = tmp1->next;
+    }
+}
+
+void search (
+        m_t *head,
+        char *name
+)
+{
+    m_t *man;
+    p_t *prod;
+
+    man = head;
+    while (man != NULL) {
+        if (strcmp (man->name, name) == 0) {
+            prod = man->p;
+            while (prod != NULL) {
+                fprintf (stdout, "  - %s %d\n", prod->name, prod->price);
+                prod = prod ->next;
+            }
+            break;
+        } else {
+            man = man->next;
+        }
+    }
+}
+
+void
+destroy (
+        m_t *head
+)
+{
+    m_t *tmp1a, *tmp1b;
+    p_t *tmp2a;
+
+    tmp1a = head;
+    while (tmp1a != NULL) {
+        tmp2a = tmp1a->p;
+        destroyProds(tmp2a);
+        tmp1b = tmp1a->next;
+        free (tmp1a->name);
+        free (tmp1a->id);
+        free (tmp1a);
+        tmp1a = tmp1b;
+    }
+}
+
+void destroyProds(p_t *ptr) {
+    p_t *n;
+    while( ptr != NULL ) {
+        n = ptr->next;
+        free(ptr->name);
+        free(ptr);
+        ptr = n;
+    }
+}

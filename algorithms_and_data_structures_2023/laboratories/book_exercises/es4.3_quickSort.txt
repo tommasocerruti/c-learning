@@ -1,0 +1,67 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+int *array_read(int *dim);
+void array_write(int *arr, int dim);
+void quicksort(int *, int, int);
+void swap(int *, int, int);
+int partition(int *, int, int);
+
+int main(void){
+    int n, *arr;
+    arr=array_read(&n);
+    quicksort(arr, 0, n-1);
+    array_write(arr,n);
+    free(arr);
+    return EXIT_SUCCESS;
+}
+
+int *array_read(int *dim){
+    int i, *arr;
+    fprintf(stdout,"Input size:");
+    fscanf(stdin,"%d",dim);
+    arr=malloc((*dim)*sizeof(int));
+    if (arr==NULL)
+        exit(1);
+    fprintf(stdout,"Initial array:\n");
+    for (i=0;i<*dim;i++){
+        fscanf(stdin,"%d",&arr[i]);
+        fprintf(stdout,"v[%d]=%d\n",i,arr[i]);
+    }
+    return arr;
+}
+
+void array_write(int *arr, int dim){
+    int i;
+    fprintf(stdout,"Sorted array:\n");
+    for (i=0;i<dim;i++)
+        fprintf(stdout, "arr[%d]=%d\n", i, arr[i]);
+}
+
+void quicksort(int *arr, int l, int r){
+    int q;
+    if (l<r){
+        q=partition(arr,l,r);
+        quicksort(arr,l,q-1);
+        quicksort(arr,q+1,r);
+    }
+}
+
+int partition(int *arr, int l, int r){
+    // HOARE with rightmost element as pivot
+    int i=l-1, j=r, pivot=arr[r];
+    while (i<j){
+        while (arr[++i]<pivot);
+        while (arr[--j]>pivot);
+        if (i<j)
+            swap(arr,i,j);
+    }
+    swap(arr,i,r);
+    return i;
+}
+
+void swap(int *arr, int n1, int n2){
+    int temp=arr[n1];
+    arr[n1]=arr[n2];
+    arr[n2]=temp;
+}

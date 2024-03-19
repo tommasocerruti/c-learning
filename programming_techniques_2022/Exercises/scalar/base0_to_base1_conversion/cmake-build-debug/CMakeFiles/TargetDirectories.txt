@@ -1,0 +1,3 @@
+C:/Users/tomma/OneDrive/Desktop/reading_material/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/base0_to_base1_conversion/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/tomma/OneDrive/Desktop/reading_material/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/base0_to_base1_conversion/cmake-build-debug/CMakeFiles/base0_to_base1_conversion.dir
+C:/Users/tomma/OneDrive/Desktop/reading_material/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/base0_to_base1_conversion/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,370 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define L0  51
+#define L1  50
+#define L2  11
+#define L3   6
+
+/* Structure declaration */
+typedef struct elem_t {
+    long int code;
+    char *name;
+    char *date;
+    char *course;
+    int year;
+    struct elem_t *left_1;
+    struct elem_t *right_1;
+    struct elem_t *left_2;
+    struct elem_t *right_2;
+} elem_s;
+
+/* function protypes */
+void read_file (char *name, elem_s **head1P, elem_s **head2P);
+void save_tree_1_r (FILE *fp, elem_s *headP);
+void save_tree_2_r (FILE *fp, elem_s *headP);
+void save_node (FILE *fp, elem_s *nodeP);
+elem_s *insert_node_1_r (elem_s *headP, elem_s *nodeP);
+elem_s *insert_node_2_r (elem_s *headP, elem_s *nodeP);
+elem_s *ins_data (elem_s *tmp, char string[2*L0], char date[L2],
+                  long int code, char course[L3], int year);
+elem_s *search_node_1 (elem_s *headP, char *name);
+elem_s *search_node_2 (elem_s *headP, long int code);
+void destroy_tree_r(elem_s *root);
+FILE *util_fopen(char *name, char *access);
+void *util_malloc(int size);
+char *util_strdup(char *src);
+
+/*
+ *  main program
+ */
+int main (void) {
+    char cmd[L0], string[2*L0];
+    char string_1[L0], string_2[L0], fileName[L0];
+    long int code;
+    elem_s *nodeP;
+    elem_s *head1P, *head2P;
+    FILE *fp;
+
+    head1P = NULL;
+    head2P = NULL;
+
+    do {
+
+        fprintf(stdout, "Command (load/searchS/searchN/saveS/saveC/quit): ");
+        scanf("%s", cmd);
+
+        if (strcmp(cmd, "load") == 0) {
+            fprintf (stdout, "File name: ");
+            scanf("%s", fileName);
+            read_file (fileName, &head1P, &head2P);
+
+        } else if (strcmp(cmd, "searchS") == 0) {
+            fprintf (stdout, "Last_name <space> First_name: ");
+            scanf("%s %s", string_1, string_2);
+            sprintf(string, "%s %s", string_1, string_2);
+            if ((nodeP = search_node_1(head1P, string)) != NULL) {
+                save_node(stdout, nodeP);
+            } else {
+                printf("node is not found\n\n");
+            }
+
+        } else if (strcmp(cmd, "searchN") == 0) {
+            fprintf (stdout, "Register number: ");
+            scanf ("%ld", &code);
+            if ((nodeP = search_node_2 (head2P, code)) != NULL) {
+                save_node(stdout, nodeP);
+            } else {
+                printf("node is not found\n\n");
+            }
+
+        } else if (strcmp(cmd, "saveS") == 0) {
+            fprintf (stdout, "File name: ");
+            scanf("%s", string);
+            if (strcmp(string, "stdout") == 0) {
+                fp = stdout;
+            } else {
+                fp = util_fopen(string, "w");
+            }
+            save_tree_1_r(fp, head1P);
+            if (strcmp(string, "stdout") != 0) {
+                fclose(fp);
+            }
+
+        } else if (strcmp(cmd, "saveC") == 0) {
+            fprintf (stdout, "File name: ");
+            scanf("%s", string);
+            if (strcmp(string, "stdout") == 0) {
+                fp = stdout;
+            } else {
+                fp = util_fopen(string, "w");
+            }
+            save_tree_2_r(fp, head2P);
+            if (strcmp(string, "stdout") != 0) {
+                fclose(fp);
+            }
+
+        } else if (strcmp(cmd, "quit") == 0) {
+            destroy_tree_r(head1P);
+        }
+
+    } while (strcmp(cmd, "quit") != 0);
+
+    return EXIT_SUCCESS;
+}
+
+/*
+ * print the 1st logic BST in a file (or in stdout if fp = stdout) in preorder
+ */
+
+void save_tree_1_r (FILE *fp, elem_s *headP) {
+    if (headP == NULL) {
+        return;
+    }
+
+    save_node (fp, headP);
+    save_tree_1_r (fp, headP->left_1);
+    save_tree_1_r (fp, headP->right_1);
+
+    return;
+}
+
+/*
+ * print the 2nd logic BST in a file (or in stdout if fp = stdout) in preorder
+ */
+
+void save_tree_2_r (FILE *fp, elem_s *headP) {
+    if (headP == NULL) {
+        return;
+    }
+
+    save_node (fp, headP);
+    save_tree_2_r (fp, headP->left_2);
+    save_tree_2_r (fp, headP->right_2);
+
+    return;
+}
+
+/*
+ * print node
+ */
+void save_node (FILE *fp, elem_s *nodeP) {
+    fprintf (fp, "%ld %s %s %s %d\n",
+             nodeP->code, nodeP->name, nodeP->date,
+             nodeP->course, nodeP->year);
+
+    return;
+}
+
+/*
+ * insertion in the first logic BST (by name)
+ */
+
+elem_s *insert_node_1_r (elem_s *headP, elem_s *nodeP) {
+    /* empty tree */
+    if (headP == NULL) {
+        headP = nodeP;
+    }
+
+    /* if nodeP is already in the tree */
+    if (strcmp(headP->name, nodeP->name) == 0) {
+        return headP;
+    }
+
+    /* left insertion */
+    if (strcmp(headP->name, nodeP->name) > 0) {
+        headP->left_1 = insert_node_1_r(headP->left_1, nodeP);
+    }
+
+    /* right insertion */
+    if (strcmp(headP->name, nodeP->name) < 0) {
+        headP->right_1 = insert_node_1_r(headP->right_1, nodeP);
+    }
+
+    return headP;
+}
+
+/*
+ * insertion in the second logic BST (by code)
+ */
+
+elem_s *insert_node_2_r (elem_s *headP, elem_s *nodeP) {
+    /* empty tree */
+    if (headP == NULL) {
+        headP = nodeP;
+    }
+
+    /* if nodeP is already in the tree */
+    if (headP->code == nodeP->code) {
+        return headP;
+    }
+
+    /* left insertion */
+    if (headP->code > nodeP->code) {
+        headP->left_2 = insert_node_2_r(headP->left_2, nodeP);
+    }
+
+    /* right insertion */
+    if (headP->code < nodeP->code) {
+        headP->right_2 = insert_node_2_r(headP->right_2, nodeP);
+    }
+
+    return headP;
+}
+
+/*
+ * search in the first logic BST (by name);
+ */
+
+elem_s *search_node_1 (elem_s *headP, char *name) {
+    while (headP != NULL) {
+        if (strcmp(name, headP->name) == 0) {
+            return headP;
+        }
+        if (strcmp(name, headP->name) < 0) {
+            headP = headP->left_1;
+        } else {
+            headP = headP->right_1;
+        }
+    }
+
+    if (headP == NULL) {
+        return NULL;
+    }
+
+    return headP;
+}
+
+/*
+ * search in the second logic BST (by code)
+ */
+
+elem_s *search_node_2 (elem_s *headP, long int code) {
+    while (headP != NULL) {
+        if (code == headP->code) {
+            return headP;
+        }
+        if (code < headP->code) {
+            headP = headP->left_2;
+        } else {
+            headP = headP->right_2;
+        }
+    }
+
+    if (headP == NULL) {
+        return NULL;
+    }
+
+    return headP;
+}
+
+/*
+ *  read file and create two logic BSTs
+ */
+
+void read_file (char *fileName, elem_s **head1P, elem_s **head2P) {
+    char surname[L0], name[L0], date[L2], course[L3], string[2*L0];
+    long int code;
+    int year;
+    FILE *infile;
+    elem_s *tmp;
+
+    infile = util_fopen (fileName, "r");
+    while (fscanf (infile, "%ld%s%s%s%s%d",
+                   &code, surname, name, date, course, &year) != EOF) {
+        sprintf (string, "%s %s", surname, name);
+        tmp = (elem_s *) util_malloc (sizeof(elem_s));
+        tmp = ins_data (tmp, string, date, code, course, year);
+        *head1P = insert_node_1_r(*head1P, tmp);
+        *head2P = insert_node_2_r(*head2P, tmp);
+    }
+
+    fclose (infile);
+
+    return;
+}
+
+/*
+ * data insertion
+ */
+
+elem_s *ins_data (elem_s *tmp, char string[2*L0], char date[L2],
+                  long int code, char course[L3], int year) {
+
+    tmp->name = util_strdup(string);
+    tmp->date = util_strdup(date);
+    tmp->course = util_strdup(course);
+    tmp->code = code;
+    tmp->year = year;
+    tmp->right_1 = tmp->left_1 = tmp->right_2 = tmp->left_2 = NULL;
+
+    return tmp;
+}
+
+/*
+ * free memory
+ */
+
+void destroy_tree_r (elem_s *root) {
+    elem_s *s,*t;
+    t = root;
+
+    if (t == NULL) {
+        return;
+    } else {
+        s = t;
+        destroy_tree_r(t->left_1);
+        destroy_tree_r(t->right_1);
+        free(s->name);
+        free(s->course);
+        free(s->date);
+        free(s);
+    }
+
+}
+
+/*
+ * open file
+ */
+
+FILE *util_fopen (char *name, char *access) {
+    FILE *fp = fopen(name, access);
+
+    if (fp == NULL) {
+        printf("File open error (file=%s).\n", name);
+        exit(EXIT_FAILURE);
+    }
+
+    return fp;
+}
+
+/*
+ * dynamic allocation
+ */
+
+void *util_malloc (int size) {
+    void *ptr = malloc(size);
+
+    if (ptr == NULL) {
+        printf("Memory allocation error!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return ptr;
+}
+
+/*
+ * string: dynamic allocation
+ */
+
+char *util_strdup (char *src) {
+    char *dst = strdup (src);
+
+    if (dst == NULL) {
+        printf("Memory allocation error!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return dst;
+}

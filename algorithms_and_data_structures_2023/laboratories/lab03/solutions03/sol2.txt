@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_R 255+1
+#define MAX_C  16+1
+#define MAX_D  10+1
+#define MAX    21
+
+typedef struct employee {
+  char *name;
+  char id[MAX_C];
+  char data[MAX_D];
+  int salary;
+  struct employee *left;
+  struct employee *right;
+} employee_t;
+
+employee_t * readFile (employee_t *, char []);
+employee_t * insert (employee_t *, employee_t *);
+void write (employee_t *, char *, char *);
+
+int main (
+  int argc,
+  char * argv[]
+  )
+{
+  employee_t *head, *tmp1, *tmp2;
+
+  if (argc!=4) {
+    fprintf( stderr,
+      "Run as: <pgrmName> <inFile> <name> <commands>\n");
+    exit (EXIT_FAILURE);
+  }
+
+  head = NULL;
+  head = readFile (head, argv[1]);
+  write (head, argv[2], argv[3]);
+
+  tmp1 = head;
+  while (tmp1!=NULL) {
+    free (tmp1->name);
+    tmp2 = tmp1->right;
+    free (tmp1);
+    tmp1 = tmp2;
+  }
+
+  return (EXIT_SUCCESS);
+}
+
+employee_t * readFile (
+  employee_t *head,
+  char *fileIn
+  )
+{
+  FILE *input;
+  char riga[MAX_R], name[MAX];
+  employee_t *tmpPtr;
+
+  input=fopen(fileIn, "r");
+  if (input==NULL){
+    printf("Error opening file!\n");
+    return (head);
+  }
+
+  while (fgets(riga, MAX_R, input)!=NULL){
+    tmpPtr = (employee_t *) malloc (sizeof (employee_t));
+    if (tmpPtr==NULL){
+      printf("Allocation Error.\n");
+      exit (EXIT_FAILURE);
+    }
+    sscanf(riga, "%s %s %s %d",
+      name, tmpPtr->id, tmpPtr->data, &tmpPtr->salary);
+    tmpPtr->name = strdup(name);
+    tmpPtr->right = head;
+    tmpPtr->left = NULL;
+    if (head!=NULL) {
+      head->left = tmpPtr;
+    }
+    head = tmpPtr;
+  }
+
+  fclose (input);
+
+  return (head);
+}
+
+void write (
+  employee_t *headPtr,
+  char *name,
+  char *command
+  )
+{
+  employee_t *tmpPtr;
+  int i;
+
+  for (tmpPtr=headPtr; tmpPtr!=NULL; tmpPtr=tmpPtr->right) {
+    if (strcmp(tmpPtr->name, name) == 0 ) {
+      break;
+    }
+  }
+
+  if (tmpPtr==NULL) {
+    return;
+  }
+
+  fprintf (stdout, "%s %s %s %d\n",
+    tmpPtr->name, tmpPtr->id, tmpPtr->data, tmpPtr->salary);
+
+  for (i=0; i<strlen(command); i++) {
+    if (command[i] == '+') {
+      if (tmpPtr->right!=NULL) {
+        tmpPtr = tmpPtr->right;
+      }
+    } else {
+      if (tmpPtr->left!=NULL) {
+        tmpPtr = tmpPtr->left;
+      }
+    }
+    fprintf (stdout, "%s %s %s %d\n",
+      tmpPtr->name, tmpPtr->id, tmpPtr->data, tmpPtr->salary);
+  }
+
+  return;
+}

@@ -1,0 +1,3 @@
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/arrays/sets_intersection/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/arrays/sets_intersection/cmake-build-debug/CMakeFiles/sets_intersection.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/arrays/sets_intersection/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2021.2.1\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\strncmp.dir/objects.a
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\ar.exe cr CMakeFiles\strncmp.dir/objects.a @CMakeFiles\strncmp.dir\objects1.rsp
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe -g -Wl,--whole-archive CMakeFiles\strncmp.dir/objects.a -Wl,--no-whole-archive -o strncmp.exe -Wl,--out-implib,libstrncmp.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\strncmp.dir\linklibs.rsp

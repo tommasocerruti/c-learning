@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/arrays/data_normalization_one/main.c
+stdio.h
+-
+

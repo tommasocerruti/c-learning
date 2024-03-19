@@ -1,0 +1,5 @@
+Students who passed the exams of the file ../students_all.txt
+s282754
+Tommaso Cerruti
+s278153
+Marco Cerruti

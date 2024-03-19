@@ -1,0 +1,3 @@
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/arrays/parabola_visualization/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/arrays/parabola_visualization/cmake-build-debug/CMakeFiles/parabola_visualization.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/arrays/parabola_visualization/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,170 @@
+//check function arguments and return values
+//spelling
+//name of variables
+//semicolomns
+
+
+//PROBLEM 1
+
+/*the idea is to define a matrix 10x10 initialized all to zero
+we read the file and set to 1 the squares that are set to 0, i.e. not already taken
+meanwhile we keep a counter of the number of 1s we write, that corresponds to the total area
+in this way the crossing area is not considered*/
+
+#define N 10
+#include <stdio.h>
+
+FILE *util_fopen(char *filename, char mode);
+
+int area(FILE *fp){
+	int matrix[N][N];
+	int i, j, count=0;
+	int x1, y1, x2, y2;
+	for (i=0;i<N;i++){
+		for (j=0;j<N;j++){
+			mat[i][j]=0;
+		}
+	}
+	while(fscanf(fp,"%d%d%d%d",&x1,&y1,&x2,&y2)!=EOF){
+		for (i=y1;i<y2;i++){
+			for (j=x1;j<x2;j++){
+				if (mat[i][j]==0){
+					mat[i][j]=1;
+					count++;
+				}
+			}
+		}
+	}
+	fclose(fp);
+	return count;
+}
+
+
+//PROBLEM 2
+
+/*the idea is that we visit each node of the list, based on its value we decide where to insert it.
+because we need to keep the sequence order, we need to tail insert in the other lists*/
+
+typedef struct list_s list_t;
+struct list_s{
+	int key;
+	node_t *next;
+};
+
+void split(list_t **head, int treshold, list_t **head1, list_t **head2){
+	list_t *h=(*head), *h1=NULL,*h2=NULL,*t1,*t2;
+	while (h!=NULL){
+		if (h->key<treshold){
+			if (h1==NULL){
+				h1=h;
+				t1=h1;
+			}
+			else {
+				t1->next=h;
+				t1=t1->next;
+				t1->next=NULL;
+			}	
+		}
+		else{
+			if (h2==NULL){
+				h2=h;
+				t2=h2;
+			}
+			else {
+				t2->next=h;
+				t2=t2->next;
+				t2->next=NULL;
+			}				
+		}
+		h=h->next;
+	}
+	(*head1)=h1;
+	(*head2)=h2;
+}
+
+
+//PROBLEM 3 {}
+
+
+/*the order in which we turn on/off the switches does not change the final result (order does not matter)
+it does not make sense to turn on/off the same switches since it would lead to the same result (no repetitions)
+--> SIMPLE COMBINATIONS
+The idea is to use simple combinations and ranging the size of the subset from 1 to n, where n is the size of the set (of switches),
+since we need to find the solution tha minimizes the use of switches and since we start from using only 1 switch up to all of them (in case it is necessary):
+first solution -> best solution
+
+implementation of simple combinations:
+- I added the integer state, since we just need one solution, and it allows use to exit the program in a structured way
+- I added the integer sz to keep track of how many bulbs a switch affects (it is used in the evaluation function)
+- The array sol stores just the index of the switches used
+- I added an evaluation function at the termination condition, to evaluate if it is a valid solution*/
+
+//functions declaration
+void best_solution(int **val, int r, int c);
+int comb(int **val, int *sol, int n, int k, int start, int pos, int state);
+int is_valid(int **val, int *sol, int k, int sz);
+
+
+//wrapper, taking as input the matrix and its size (i.e. rows r and columns c, where r indicates the number of switches and c the number of bulbs)
+void best_solution(int **val, int r, int c){
+	int i;
+	sol=malloc(r*sizeof(int));
+	if (sol==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	for (i=0;i<r;i++){
+		if (comb(val,sol,r,i,c,0,0,0)
+			return;
+	}	
+}
+
+//recursive program executing the combinations
+int comb(int **val, int *sol, int n, int k, int sz, int start, int pos, int state){
+	int i;
+	if (pos>=k){
+		if (is_valid(val,sol,k,sz)){
+			fprintf(stdout,"The best solution is [");
+			for (i=0;i<k;i++)
+				fprintf(stdout,"switch %d",sol[i]);
+			fprintf(stdout,"]");
+			return 1;
+		}
+		return 0;
+	}
+	for (i=start;i<n && !state;i++){
+		sol[pos]=i;
+		state=comb(val,sol,n,k,sz,i+1,pos+1,state);
+	}
+	return state;
+}
+
+//function evaluating the solution
+int is_valid(int **val, int *sol, int k, int sz){
+	int i,j;
+	int *check;
+	check=calloc(sz,sizeof(int));
+	if (check==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	for (i=0;i<k;i++){
+		for (j=0;j<sz;j++)
+			check[j]+=val[i][j];
+	}
+	for (i=0;i<sz;i++)
+		if (check[i]!=0)
+			return 0;
+	free(check);
+	return 1;	
+}
+
+void *util_malloc(int size){
+	void *ptr;
+	ptr=malloc(size);
+	if (ptr==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	return ptr;
+}

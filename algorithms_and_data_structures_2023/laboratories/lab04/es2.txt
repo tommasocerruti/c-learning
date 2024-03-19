@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <ctype.h>
+
+int mult(int, int); //A
+void d2b (int ,int *, int *); //B, assuming correct number of bits
+int countspace(char *s); //C
+int catalan(int n); //D
+int isPalindrome1 (char *s, int l); //E.x, version not taking into consideration punctuation
+int isPalindrome2 (char *s, int l); //E, version taking into consideration punctuation and low/cap letters
+void triangle1 (int n); //F
+void triangle2 (int n, int i, int *x); //G, i should be equal to n and *x a pointer to a positive flag
+
+int main(void){
+    return 0;
+}
+
+int mult(int x, int y){
+    if (y==0)
+        return 0;
+    return (x+mult(x,y-1));
+}
+
+void d2b (int d, int *b, int *n){
+    if (d==0)
+        return;
+    d2b(d/2,b+1,n);
+    (*b)=(d%2);
+}
+
+int catalan(int n){
+    int i, val=0;
+    if (n==0)
+        return 1;
+    for (i=0;i<n;i++)
+        val+=catalan(i)*catalan(n-i-1);
+    return val;
+}
+
+int countspace(char *s){
+    int val;
+    if ((*s)=='\n')
+        return 0;
+    val=countspace(s+1);
+    if (isspace(*s))
+        val+=1;
+    return val;
+}
+
+int isPalindrome1 (char *s, int l){
+    int val=1;
+    if (((*s)!=s[l-1]))//not same
+        return 0;
+    if ((s)==&s[l-1])//t. condition
+        return 1;
+    return val*isPalindrome1(s+1,l-2);
+}
+
+int isPalindrome2 (char *s, int l){
+    int val=1;
+    while(!isalnum(*s)){
+        s++;
+        l--;
+    }
+    while(!isalnum(s[l-1]))
+        l--;
+    if (!isalnum(s[l-1]))
+        (*s)++;
+    if ((tolower(*s)!=tolower(s[l-1])))//not same
+        return 0;
+    if ((s)==&s[l-1])//t. condition
+        return 1;
+    return val*isPalindrome2(s+1,l-2);
+}
+
+void triangle1 (int n){ //F
+    if (n==1){
+        printf("1\n");
+        return;
+    }
+    triangle1(n - 1);
+    for (int i=0;i<n;i++)
+        printf("%d ",n);
+    printf("\n");
+}
+
+void triangle2 (int n, int i, int *f){ //G
+    if (n==1){
+        *f=1;
+        printf("1\n");
+        return;
+    }
+    if (!(*f)){
+        triangle2(n-1,i-1,f);
+    }
+    if (i>1)
+        triangle2(n,i-1,f);
+    printf("%d",n);
+    if (i==n)
+        printf("\n");
+}

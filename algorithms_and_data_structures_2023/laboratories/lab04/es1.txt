@@ -1,0 +1,179 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#define IDSZ 6
+#define NMSZ 41
+#define COMPANY 0
+#define BUDGET 1
+
+typedef struct product{
+    struct product *nextp;
+    char *name, id[IDSZ];
+    int cost;
+} product_t;
+
+typedef struct producer{
+    product_t *prods;
+    struct producer *next;
+    char *name, id[IDSZ];
+} producer_t;
+
+producer_t *readProducers(producer_t *, char *);
+producer_t *readProducts(producer_t *, char *);
+producer_t *createProducer(producer_t *, char *, char *);
+product_t *createProduct(product_t *, char *, char *, int);
+int wrdcmp(char *a, char *b);
+void company(producer_t *, char *);
+void budget(producer_t *, int);
+product_t *cleanEverything(producer_t *);
+
+int main(int argc, char *argv[]){
+    producer_t *head=NULL;
+    if (argc!=4){
+        fprintf(stderr, "Wrong parameters error: expected 3 but received %d",argc-1);
+        exit(1);
+    }
+    head=readProducers(head, argv[1]);
+    head=readProducts(head, argv[2]);
+#if (COMPANY)
+        company(head, argv[3]);
+#endif
+#if (BUDGET)
+        budget(head, atoi(argv[3]));
+#endif
+    //cleanEverything(head);
+    return 0;
+}
+
+producer_t *createProducer(producer_t *p, char *name, char *id){
+    p=malloc(sizeof(producer_t));
+    if (p==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    strcpy(p->id,id);
+    p->name=strdup(name);
+    p->prods=NULL;
+    p->next=NULL;
+    return p;
+}
+
+product_t *createProduct(product_t *p, char *name, char *id, int cost){
+    p=malloc(sizeof(producer_t));
+    if (p==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    strcpy(p->id,id);
+    p->name=strdup(name);
+    p->cost=cost;
+    p->nextp=NULL;
+    return p;
+}
+
+producer_t *readProducers(producer_t *head, char *filename){
+    FILE *fp;
+    char name[NMSZ], id[IDSZ];
+    producer_t *prod, *p=NULL;
+    if ((fp=fopen(filename,"r"))==NULL){
+        fprintf(stderr,"File producers opening error");
+        exit(1);
+    }
+    while (fscanf(fp,"%s %s",name,id)!=EOF){
+        prod=createProducer(prod,name,id);
+        if (p==NULL){
+            p=prod;
+            head=p;
+        }
+        else{
+            p->next=prod;
+            p=prod;
+        }
+    }
+    return head;
+}
+
+producer_t *readProducts(producer_t *head, char *filename){
+    FILE *fp;
+    char name[101], id[IDSZ];
+    int cost;
+    producer_t *p;
+    product_t *prod, *t;
+    if ((fp=fopen(filename,"r"))==NULL){
+        fprintf(stderr,"File product opening error");
+        exit(1);
+    }
+    while (fscanf(fp,"%s %s %d",id,name,&cost)!=EOF){
+        p=head;
+        prod=createProduct(prod,name,id,cost);
+        while((p->next!=NULL) && (strcmp(p->id,prod->id)!=0))
+            p=p->next;
+        if (strcmp(p->id,prod->id)!=0){
+            fprintf(stderr,"Producer of the product not found");
+            exit(1);
+        }
+        if (p->prods == NULL)
+            p->prods=prod;
+        else{
+            t=p->prods;
+            while(t->nextp!=NULL)
+                t=t->nextp;
+            t->nextp=prod;
+        }
+    }
+    return head;
+}
+
+int wrdcmp(char *a, char *b) {
+    int i;
+    if( strlen(a) != strlen(b) )
+        return 0;
+    for(i = 0; i < strlen(a); i++ ) {
+        if( tolower(a[i]) != tolower(b[i]) )
+            return 0;
+    }
+    return 1;
+}
+
+void company(producer_t *head, char *cmpname){
+    producer_t *p=head;
+    product_t *t;
+    if (p==NULL){
+        fprintf(stderr,"Empty list error");
+        return;
+    }
+    while((p!=NULL) && (wrdcmp(p->name,cmpname)!=1))
+        p=p->next;
+    if (wrdcmp(p->name,cmpname)!=1){
+        fprintf(stderr,"Name not found");
+        return;
+    }
+    if (p->prods==NULL){
+        fprintf(stderr,"No products belonging to %s",cmpname);
+        return;
+    }
+    t=p->prods;
+    fprintf(stdout,"The products belonging to %s are:",cmpname);
+    while (t!=NULL){
+        fprintf(stdout,"\n%s : %d",t->name,t->cost);
+        t=t->nextp;
+    }
+}
+
+void budget(producer_t *head, int maxcost){
+    producer_t *p=head;
+    product_t *t;
+    if (p==NULL){
+        fprintf(stderr,"Empty list error");
+        exit(1);
+    }
+    while (p!=NULL){
+        t=p->prods;
+        while((t!=NULL) && ((t->cost)<=maxcost)){
+            fprintf(stdout,"\n%s (%s) : %d",t->name, p->name, t->cost);
+            t=t->nextp;
+        }
+        p=p->next;
+    }
+}

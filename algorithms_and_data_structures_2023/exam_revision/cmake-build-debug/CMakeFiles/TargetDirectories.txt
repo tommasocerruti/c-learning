@@ -1,0 +1,3 @@
+C:/Users/tomma/OneDrive/Desktop/Courses/ADS/exam_revision/cmake-build-debug/CMakeFiles/exam_revision.dir
+C:/Users/tomma/OneDrive/Desktop/Courses/ADS/exam_revision/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/tomma/OneDrive/Desktop/Courses/ADS/exam_revision/cmake-build-debug/CMakeFiles/rebuild_cache.dir

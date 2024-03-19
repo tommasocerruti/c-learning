@@ -1,0 +1,94 @@
+Algorithms and Data Structures
+Laboratory number 09
+--------------------
+
+
+Exercise 01 (A-F)
+----------------
+
+The graph library
+lab09-GraphLibrary
+provides all main graph library features, such as:
+- graph load (from file)
+- DFS (Depth First Search)
+- BFS (Breadth First Search)
+- etc.
+on an adjacency-list-based representation of the graph.
+
+The graph library includes the following files:
+- client.c
+  calls the library functions to verify their behavior
+- graph.h, graph.c
+  define the data structure to store and undirected or directed,
+  unweighted or weighted graph and all main manipulation
+  functions.
+- queuePublic.h, queuePrivate.h, queue.c
+  implement a FIFO queue library used within the BFS
+- util.c, util.h
+  implement some utility functions (dynamic memory
+  allocation, file opening, etc.)
+
+The format of the input file is the following:
+
+numberOfVertices c
+vertex1A vertex1B weight
+vertex2A vertex2B weight
+...
+
+where
+- c is 0 for undirected graphs, and 1 for directed graphs
+- vertex1A vertex1B
+  indicates the edge from vertex vertex1A to vertex vertex1B
+- weight (if it is reported) indicates the weight of the edge.
+  If it is missing, the graph is unweighted.
+
+For more details on the library, please see the overhead sections
+- u11s02-representations
+- u11s03-visits
+and the input files (named inX.txt) for graph examples.
+
+The client:
+- receives a file name on the command line
+- computes some statistics on the graph and performs a BFS and a DFS.
+
+First of all, create a new project, including the library, then
+compile, understand, and run it on the input files (any of the
+files inX.txt).
+
+Afterward, extend the library by writing a new source (.c) file
+containing the following functions (select the type and
+the parameters of each function):
+
+A. graph_bfs_count
+   a "copy" of the BFS function, which evaluates and returns
+   the number of visited vertices in the graph.
+
+B. graph_dfs_distance
+   a copy of the BFS function, which evaluates the highest
+   distance of a node from the source vertex.
+   In other words, this function evaluates the number of steps
+   to reach, from the source node, the farthest vertex.
+
+C. graph_dfs_type
+   a copy of the DFS function, which performs the same operations of
+   the DFS function, but in addition, it evaluates, and it returns the
+   number of Tree edges, Forward edges, Backward edges and
+   Cross edges encountered during the visit.
+
+D. graph_dfs_depth
+   a copy of the DFS function, which performs the same operations of
+   the DFS function, but in addition, it evaluates and returns the
+   depth of the DFS visit tree.
+
+E and F.
+   graph_dfs_r_max_path
+   a copy of the DFS function, which considers the graph as directed
+   and weighted, and it computes the length of the longest path
+   starting at the source node and visiting each node of the graph
+   at most once.
+   The length of a path is defined as the sum of its edges.
+   Write two versions of this function:
+   - the first one works on generic graphs (with cycles).
+   - the second (simplified) works only on acyclic (and
+     weighted) graphs.
+

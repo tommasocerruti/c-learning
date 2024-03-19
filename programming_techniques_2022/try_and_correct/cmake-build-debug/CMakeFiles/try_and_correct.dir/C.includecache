@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/try_and_correct/main.c
+stdlib.h
+-
+string.h
+-
+stdio.h
+-
+

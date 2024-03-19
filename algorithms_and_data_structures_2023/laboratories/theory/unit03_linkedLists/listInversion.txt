@@ -1,0 +1,62 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+typedef struct node_t{
+    int key;
+    struct node_t *nextp;
+} node_t;
+
+node_t * new_element();
+node_t * visit_element(node_t **);
+node_t * search_element(node_t *, int);
+
+
+int main(void){
+    node_t *p, *head;
+    //allocating elements
+    p=new_element();
+    //visiting elements (and increase key value)
+    p=visit_element(&head);
+    // search elements
+    p=search_element(head,10);
+
+}
+
+node_t * new_element(){
+    node_t *e_ptr;
+    e_ptr=malloc(sizeof(node_t));
+    if (e_ptr==NULL){
+        fprintf(stderr,"Memory allocation error.\n");
+        exit(EXIT_FAILURE);
+    }
+    return e_ptr;
+}
+
+node_t * visit_element(node_t **p){
+    node_t *e_ptr;
+    e_ptr=malloc(sizeof(node_t));
+    if (e_ptr==NULL){
+        fprintf(stderr,"Memory allocation error.\n");
+        exit(EXIT_FAILURE);
+    }
+    e_ptr=*p;
+    while (e_ptr->nextp!=NULL){
+        e_ptr->key+=1;
+        e_ptr=e_ptr->nextp;
+    }
+    return e_ptr;
+}
+
+node_t * search_element(node_t *p, int val){
+    while (p!=NULL){
+        if (p->key==val)
+            return p;
+        else
+            p=p->nextp;
+    }
+    return NULL;
+    //structured search using a flag
+}
+
+//{}

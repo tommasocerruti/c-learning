@@ -1,0 +1,51 @@
+Given n sets Si, each one of cardinality |Si|:
+How many ordered tuples we can extract?
+MS1,...,S(n-1)=product(Si)(0to(N-1))
+
+In practice: When you need to choose one of each set
+
+Example: Any customer can choose 1 apetizer (out of 2), 1 first course (out of 3), and 1 second course (out of 2).
+M=2*3*2=12 menus
+
+Implementation (data structure):
+typedef struct val_s{
+    int num_choice;
+    int *choices;
+} val_t;
+val=malloc(n*sizeof(val_t));
+for (i=0;i<n;i++)
+    val[i].choices=malloc(val[i].n_choice*sizeof(int));
+//val[i] storing the set i: how many values(num_choices) and the values(*choices)
+sol=malloc(n*sizeof(int));
+//to store the solution
+
+Implementation (algorithm):
+int mult_princ (val_t *val, int *sol, int n, int count, int pos){
+    int i;
+    if (pos>=n){
+        printf("Solution %d: ,count);
+        for (i=0;i<n;i++)
+            printf("%d ",sol[i]);
+        printf("\n");
+        return count+1;
+    }
+    for (i=0;i<val[pos].num_choice;i++){
+        sol[pos]=val[pos].choices[i];
+        count=mult_princ(val,sol,n,count,pos+1);
+    }
+    return count;
+}
+
+Example:
+1 1 1
+1 1 2
+1 2 1
+1 2 2
+1 3 1
+1 3 2
+2 1 1
+2 1 2
+2 2 1
+2 2 2
+2 3 1
+2 3 2

@@ -1,0 +1,98 @@
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdio.h>
+
+#define MAXLW 20
+
+typedef struct{
+    char *word;
+    int occ;
+}index_t;
+
+void read_words(index_t **, int *, char *);
+void read_text(index_t **, int, char *);
+int compare(char *, char *);
+void print_results(index_t *, int);
+void destroy (index_t **, int);
+
+// DISCLAIMER:
+// Before compiling do the following procedure to run the program
+// Run --> Edit Configuration --> Program arguments --> words.txt text.txt
+// Move the text files from "files" to "cmake-build-debug"
+// Run the code!
+
+int main(int argc, char *argv[]) {
+    int n;
+    index_t *indices;
+    read_words(&indices,&n,argv[1]);
+    read_text(&indices, n, argv[2]);
+    print_results(indices,n);
+    destroy(&indices,n);
+    return EXIT_SUCCESS;
+}
+
+void read_words(index_t **indices, int *n, char *input){
+    FILE *fp;
+    int i=0;
+    char word[MAXLW];
+    if ((fp=fopen(input, "r"))==NULL){
+        fprintf(stderr,"Error opening file %s",input);
+        exit(1);
+    }
+    fscanf(fp,"%d",n);
+    (*indices)=malloc((*n)*sizeof(index_t));
+    if ((*indices)==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    while (fscanf(fp,"%s",word)!=EOF){
+        (*indices)[i].word=strdup(word);
+        (*indices)[i].occ=0;
+        i++;
+    }
+    fclose(fp);
+}
+
+void read_text(index_t **indices, int n, char *input){
+    FILE *fp;
+    int i;
+    char word[MAXLW];
+    if ((fp=fopen(input, "r"))==NULL){
+        fprintf(stderr,"Error opening file %s",input);
+        exit(1);
+    }
+    while (fscanf(fp,"%s",word)!=EOF){
+        for (i=0;i<n;i++){
+            if ((compare(word,(*indices)[i].word))==1)
+                (*indices)[i].occ++;
+        }
+    }
+    fclose(fp);
+}
+
+int compare(char *s1, char *s2){
+    int i;
+    if (strlen(s1)!=strlen(s2))
+        return 0;
+    else{
+        for (i=0;i<strlen(s1);i++){
+            if (tolower(s1[i])!=tolower(s2[i]))
+                return 0;
+        }
+    }
+    return 1;
+}
+
+void print_results(index_t *indices, int n){
+    int i;
+    for (i=0;i<n;i++)
+        fprintf(stdout, "%s: %d occurence(s)\n", indices[i].word, indices[i].occ);
+}
+
+void destroy (index_t **indices, int n){
+    int i;
+    for (i=0;i<n;i++)
+        free((*indices)[i].word);
+    free(*indices);
+}

@@ -1,0 +1,30 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+#define BASE 10
+
+void binary(int, int, int*);
+
+int main(void){
+    int n, *arr;
+    fscanf(stdin,"%d",&n);
+    arr=malloc(n*sizeof(int));
+    if (arr==NULL)
+        return EXIT_FAILURE;
+    binary(n,0,arr);
+    return EXIT_SUCCESS;
+}
+
+void binary(int n, int depth, int *arr){
+    int i;
+    if (depth>=n){
+        for (i=0;i<n;i++)
+            fprintf(stdout,"%d",arr[i]);
+        fprintf(stdout,"\n");
+        return;
+    }
+    for (i=0;i<BASE;i++){
+        arr[depth]=i;
+        binary(n,depth+1,arr);
+    }
+}

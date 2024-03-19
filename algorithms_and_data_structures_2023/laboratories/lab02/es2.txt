@@ -1,0 +1,267 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define MAXL 20
+
+char *** read_matrix(char *, int *, int *);
+char ** matrix_to_vector(char ***, int, int);
+void merge(char **, char **, char ***, int, int);
+// create local variables and work with this
+// remember:
+// * --> string
+// ** --> arrays of strings
+// *** --> matrix of strings
+// **** --> pointer to the matrix
+void print_vector(char *, char **, int);
+void free_memory(char **, char ***, int, int);
+
+int main(int argc, char *argv[]){
+    char ***mat, **vet;
+    int r, c;
+    mat=read_matrix(argv[1], &r, &c);
+    vet=matrix_to_vector(mat, r, c);
+    print_vector(argv[2], vet, r*c);
+    free_memory(vet, mat, r, c);
+    return 0;
+};
+
+char *** read_matrix(char *filename, int *r, int *c){
+    FILE *fp;
+    int i, j;
+    char ***mat, str[MAXL + 1];
+    if ((fp=fopen(filename,"r"))==NULL){
+        fprintf(stderr,"File %s opening error",filename);
+        exit(1);
+    }
+    fscanf(fp,"%d%d",r,c);
+    mat=malloc((*r)*sizeof(char *));
+    if (mat==NULL){
+        fprintf(stdout,"Memory allocation error");
+        exit(1);
+    }
+    for (i=0;i<(*r);i++){
+        mat[i]=malloc((*c)*sizeof(char *));
+        if (mat[i]==NULL){
+            fprintf(stdout,"Memory allocation error");
+            exit(1);
+        }
+    }
+    for (i=0;i<(*r);i++){
+        for (j=0;j<(*c);j++){
+            fscanf(fp, "%s", str);
+            mat[i][j]=strdup(str);
+        }
+        printf("\n");
+    }
+    return mat;
+}
+
+char ** matrix_to_vector(char ***mat, int r, int c){
+    char **vet, min_word[MAXL+1];
+    int i=0,j,n=r*c, *ind, min_ind;
+    vet=malloc(n*sizeof(char *));
+    if (vet==NULL){
+        fprintf(stdout,"Memory allocation error");
+        exit(1);
+    }
+    ind=calloc(r,sizeof(int));
+    if (ind==NULL){
+        fprintf(stdout,"Memory allocation error");
+        exit(1);
+    }
+    while (i<r*c){
+        min_ind=-1;
+        for (j=0;j<r;j++){
+            if ((ind[j]<c)){
+                if ((min_ind==-1) || (strcmp(min_word,mat[j][ind[j]])>0)){
+                    min_ind=j; strcpy(min_word,mat[j][ind[j]]);
+                }
+            }
+        }
+        vet[i++]=strdup(min_word);
+    }
+    free(ind);
+    return vet;
+}
+
+void print_vector(char *filename, char **vet, int n){
+    int i;
+    FILE *fp;
+    if ((fp=fopen(filename,"w"))==NULL){
+        fprintf(stdout,"File %s opening error",filename);
+        exit(1);
+    }
+    fprintf(fp,"%d\n",n);
+    for (i=0;i<n;i++)
+        fprintf(fp,"%s\n",vet[i]);
+}
+
+void free_memory(char **vet, char ***mat, int r, int c){
+    int i,j;
+    for (i=0;i<r*c;i++)
+        free(vet[i]);
+    free(vet);
+    for (i=0;i<r;i++){
+        for (j=0;j<c;j++)
+            free(mat[i][j]);
+        free(mat[i]);
+    }
+    free(mat);
+}
+
+
+/*
+
+THIS IS A SOLUTION THAT I CAME UP WITH
+IT IS NOT COMPLETE AND IT IS COMPLEX
+HENCE TAKE IT INTO CONSIDERATION FOR FUTURE PRACTICES
+
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define MAXL 20
+
+char *** read_matrix(char *, int *, int *);
+char ** matrix_to_vector(char ***, int, int);
+void merge(char **, char **, char ***, int, int);
+// create local variables and work with this
+// remember:
+// * --> string
+// ** --> arrays of strings
+// *** --> matrix of strings
+// **** --> pointer to the matrix
+// merge (array of string, array of string, pointer to the string) --> (++ ++ +++)
+// update (pointer to the matrix, array of string) --> (++++ ++)
+void update(char ****, char **, int, int);
+void print_vector(char *, char **, int);
+
+int main(int argc, char *argv[]){
+    char ***mat, **vet;
+    int r, c;
+    mat=read_matrix(argv[1], &r, &c);
+    vet=matrix_to_vector(mat, r, c);
+    print_vector(argv[2], vet, r*c);
+    return 0;
+};
+
+char *** read_matrix(char *filename, int *r, int *c){
+    FILE *fp;
+    int i, j;
+    char ***mat, str[MAXL + 1];
+    if ((fp=fopen(filename,"r"))==NULL){
+        fprintf(stderr,"File %s opening error",filename);
+        exit(1);
+    }
+    fscanf(fp,"%d%d",r,c);
+    mat=malloc((*r)*sizeof(char *));
+    if (mat==NULL){
+        fprintf(stdout,"Memory allocation error");
+        exit(1);
+    }
+    for (i=0;i<(*r);i++){
+        mat[i]=malloc((*c)*sizeof(char *));
+        if (mat[i]==NULL){
+            fprintf(stdout,"Memory allocation error");
+            exit(1);
+        }
+    }
+    for (i=0;i<(*r);i++){
+        for (j=0;j<(*c);j++){
+            fscanf(fp, "%s", str);
+            mat[i][j]=strdup(str);
+        }
+        printf("\n");
+    }
+    return mat;
+}
+
+//IDEA:
+//merging the i,i+1 arrays into a vector
+//storing the vector back into the i and i+1 arrays
+
+char ** matrix_to_vector(char ***mat, int r, int c){
+    char **vet;
+    int i,j,n=r*c,l;
+    vet=malloc(n*sizeof(char *));
+    if (vet==NULL){
+        fprintf(stdout,"Memory allocation error");
+        exit(1);
+    }
+    for (i=1;i<c;i*=2){
+        for (j=0;j<c;j+=2*i){
+            printf("i=%d, j=%d, calling merge(mat[%d],mat[%d],%p,%d,%d)\n",i,j,j,j+i,&vet+j,c*i,c*i);
+            merge(mat[j],mat[j+i],&vet+j*(2*c),c*i,c*i);
+        }
+        for (l=0;l<n;l++)
+            printf("%s",vet[l]);
+        update(&mat,vet,r,c);
+    }
+    if ((n%2)!=0)
+        merge(mat[0],mat[n-1],&vet+j,c*i,c);
+    return vet;
+}
+
+void merge(char **A, char **B, char ***vet, int size1, int size2){
+    int a=0, b=0, c=0, i;
+    char **C;
+    C=malloc((size1+size2)*sizeof(char *));
+    while ((a<size1)&&(b<size2)){
+        if (strcmp(A[a],B[b])<0){
+            C[c]=strdup(A[a]); a++;
+        } else {
+            C[c]=strdup(B[b]); b++;
+        }
+        c++;
+    }
+    if (a==size1){
+        while (b<size2){
+            C[c]=strdup(B[b]);b++;c++;
+        }
+    }
+    else{
+        while (a<size1){
+            C[c]=strdup(A[a]);a++;c++;
+        }
+    }
+    for (i=0;i<c;i++)
+        (*vet)[i]=C[i];
+}
+
+void update(char ****mat, char **vet, int r, int c){
+    int i, j;
+    char ***mat_loc;
+    mat_loc=malloc(r*sizeof(char *));
+    for (i=0;i<r;i++){
+        mat_loc[i]=malloc(c*sizeof(char *));
+    }
+    mat_loc=*mat;
+    for (i=0;i<r;i++){
+        for (j=0;j<c;j++){
+            (*mat)[i][j]=strdup(vet[j+i*c]);
+        }
+    }
+    *mat=mat_loc;
+    for (i=0;i<r;i++){
+        free(mat_loc[i]);
+    }
+    free(mat_loc);
+}
+
+void print_vector(char *filename, char **vet, int n){
+    int i;
+    FILE *fp;
+    if ((fp=fopen(filename,"w"))==NULL){
+        fprintf(stdout,"File %s opening error",filename);
+        exit(1);
+    }
+    fprintf(fp,"%d\n",n);
+    for (i=0;i<n;i++)
+        fprintf(fp,"%s\n",vet[i]);
+}
+
+//{}
+
+*/

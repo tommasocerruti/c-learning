@@ -1,0 +1,189 @@
+{}
+
+//PROBLEM 1
+
+#include <stdio.h>
+
+void bishop(int **, int);
+int check(int **, int, int, int);
+
+void bishop(int **mat, int n){
+	int i, j, max=-1, val;
+	for (i=0;i<n;i++){
+		for (j=0;j<n;j++){
+			if (mat[y][x]==0){
+				val=check(mat,n,i,j),
+				if (val>max)
+					max=val;
+			}
+		}
+	}
+}
+
+int check(int **mat, int n, int i_st, int j_st){
+	int i, j, val=0;
+	i=1:j=1;
+	//diag up-left
+	while ((i_st-i)>=0 && (j_st-j)>=0)
+		val+=mat[i_st-(i++)][j_st-(j++)];
+	i=1:j=1;
+	//diag up-right
+	while ((i_st-i)>=0 && (j_st+j)<n)
+		val+=mat[i_st-(i++)][j_st+(j++)];
+	i=1:j=1;
+	//diag bot-left
+	while ((i_st+i)<n && (j_st-j)>=0)
+		val+=mat[i_st+(i++)][j_st-(j++)];
+	i=1:j=1;
+	//diag bot-right
+	while ((i_st+i)<n && (j_st+j)<n)
+		val+=mat[i_st+(i++)][j_st+(j++)];
+	return val;
+}
+
+//not completely correct since does not return the coordinates
+
+//PROBLEM 2
+
+typedef struct node node_t;
+
+struct node{
+	int key;
+	node_t *leftc, *rightc;
+}
+
+//the idea is to visit the tree in whatever way, and check if the nodes are the same
+//what makes more sense is to visit it in pre-order so that as soon as we find a different node we return 0
+//we multiply a value by the true or false value depending on the previous state, in this way if there is a zero all 1 will be zeroed
+
+int tree_isomorphism(node_t *t1, node_t *t2){
+	static int equal=1;
+	if (t1==NULL){//termination condition
+		if (t2==NULL)
+			return 1;
+		return 0;	
+	}
+	//visit in-order
+	if (t1->key!=t2->key)
+		return 0;
+	if (tree_isomorphism(t1->leftc,t2->leftc)==0)
+		return 0;
+	if(tree_isomorphism(t1->rightc,t2->rightc)==0)
+		return 0;
+	return 1;
+}
+
+
+
+//PROBLEM 3
+
+//despite the sum is a cummutative operation, the ORDER in which we visit the square MATTERS!
+//the reason is that every number has its own neighbours
+//ex: visiting 1 9 2 would put us in a position where we can choose only 2's neighbours
+//whereras if we visit 1 2 9 it's different since we can now choose only 9's neighbours
+//we can visit each square only once, NO REPETITIONS!
+//we need to find the best solution which will be of a size depening on the specific matrix
+//it might be a SUBSET of any size or even the whole set! 
+//--> Simple arrangements
+
+#define N 9
+
+{}
+
+//I cannot initialize max to any value because there is no number such that whatever the matrix, 
+//that number will be less than any other (the maximum of the matrix might even be a negative number indeed)
+//hence we just use a flag to check if we already found one possible solution
+// moreover we also define length since between two solutions of equal value, we choose minimum length
+// for the length we know it is always greater than -1, so we can initialize it
+
+global int max;
+global int flag=1;
+global int length=-1;
+
+//we assume the matrix size is mxn (m colomuns and n rows)
+
+//wrapper
+int best_solution(int **mat, int n, int m){
+	int **sol, i, j;
+	sol=malloc(n*sizeof(int*));
+	if (sol==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(EXIT_FAILURE);
+	}
+	for (i=0;i<n;i++){
+		sol[i]=malloc(m*sizeof(int));
+		if (sol[i]==NULL){
+			fprintf(stderr,"Memory allocation error");
+			exit(EXIT_FAILURE);
+		}
+	}
+	arr(mat,sol,0,0,n,m,0);
+	if (!flag){
+		fprintf(stdout,"The best solution has value %d and length %d, and it is the following:\n",max,length);
+		for (i=0;i<n;i++){
+			for (j=0;i<m;j++){
+				fprintf(stdout,"%d",sol[i][j])
+			}
+			fprintf(stdout,"\n");
+		}
+	}
+	for (i=0;i<n;i++)
+		free(sol[i]);
+	free(sol);
+	return max;
+				
+}
+
+
+
+//recursive function
+int arr(int **val, int **sol, int i, int j, int n, int m, int step){
+	static int sum=0;
+	int neigh, i_loc, j;
+	if (i==(n-1)&&j==(m-1))//termination condition 
+		if (((!flag||(sum+mat[i][j])>max)||((sum+mat[i][j])==max)&&(pos<length))){
+			if (flag)
+				flag=0;
+			sol[i][j]==pos;
+			max=sum+mat[i][j];
+			length=pos;
+		}
+	//for all the neighbours		
+	if (j-1>0){//the three above (i,j): (i-1,j-1),(i-1,j),(i-1,j+1)
+		for (i_loc=i-1;(i_loc+i>=0 && i_loc+i<n && i_loc<3);i_loc++){
+			if (sol[i_loc+i][j-1]==0){
+				sol[i_loc+i][j-1]=pos;
+				sum+=mat[i_loc+i][j-1];
+				arr(sum,sol,mark,i_loc+i,j-1,n,m,step+1);
+				sol[i_loc+i][j-1]=0;
+				sum-=mat[i_loc+i][j-1];
+			}
+				
+		}
+	}
+	// (i-1,j) and (i+1,j)
+	for (i_loc=i-1;(i_loc+i>=0 && i_loc+i<n && i_loc<3);i_loc++){
+		if (sol[i_loc+i][j]==0){//i_loc=0 is not a problem since (sol[i_loc+i][j]==0) will be false
+			sol[i_loc+i][j]=pos;
+			sum+=mat[i_loc+i][j];
+			arr(sum,sol,mark,i_loc+i,j,n,m,step+1);
+			sol[i_loc+i][j]=0;
+			sum-=mat[i_loc+i][j];
+		}
+	}
+	if (j+1<n){//the three below (i,j): (i+1,j-1),(i+1,j),(i+1,j+1)
+		for (i_loc=i-1;(i_loc+i>=0 && i_loc+i<n && i_loc<3);i_loc++){
+			if (sol[i_loc+i][j+1]==0){
+				sol[i_loc+i][j-1]=pos;
+				sum+=mat[i_loc+i][j-1];
+				arr(sum,sol,mark,i_loc+i,j-1,n,m,step+1);
+				sol[i_loc+i][j-1]=0;
+				sum-=mat[i_loc+i][j-1];
+			}
+				
+		}
+	}
+	return max;
+}
+
+//comment: just create two vectors pointing at the adjacent, and put the pathSumMax pathSumCurrent and pathLenMax in the function arguments

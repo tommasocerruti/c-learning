@@ -1,0 +1,3 @@
+C:/Users/tomma/OneDrive/Desktop/reading_material/course_PROGRAMMING.TECHNIQUES/Labs/L01/E04/cmake-build-debug/CMakeFiles/E04.dir
+C:/Users/tomma/OneDrive/Desktop/reading_material/course_PROGRAMMING.TECHNIQUES/Labs/L01/E04/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/tomma/OneDrive/Desktop/reading_material/course_PROGRAMMING.TECHNIQUES/Labs/L01/E04/cmake-build-debug/CMakeFiles/rebuild_cache.dir

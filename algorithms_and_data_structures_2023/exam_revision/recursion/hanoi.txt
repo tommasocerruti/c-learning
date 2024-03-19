@@ -1,0 +1,6 @@
+int main(void){
+    int n;
+    scanf("%d",&n);
+    hanoi_r(n,0,2);
+    return EXIT_SUCCESS;
+}

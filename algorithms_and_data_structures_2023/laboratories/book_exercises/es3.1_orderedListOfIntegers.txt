@@ -1,0 +1,159 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+//struct declaration
+typedef struct node_s{
+    int val;
+    struct node_s *nextp;
+} node_t;
+
+//function prototypes
+int read (void);
+node_t *insert (node_t *head, int val);
+void search (node_t *head, int val);
+node_t *delete_first (node_t *head);
+node_t *delete_last (node_t *head);
+node_t *delete (node_t *head, int val);
+void display (node_t *head);
+
+//main program
+int main(void){
+    node_t *head=NULL;
+    int val, stop=0;
+    char choice;
+    while (stop==0){
+        fprintf(stdout, "\nAvailable commands:\n");
+        fprintf(stdout, "i: insert a value (sorted)\n");
+        fprintf(stdout, "s: search a value\n");
+        fprintf(stdout, "f: delete the first value\n");
+        fprintf(stdout, "l: delete the last value\n");
+        fprintf(stdout, "d: delete a specified value\n");
+        fprintf(stdout, "c: display the list content\n");
+        fprintf(stdout, "e: end the program\n");
+        fprintf(stdout, "Make your choice:");
+        fscanf(stdin,"%c%*c",&choice);
+        switch(choice){
+            case 'i':
+                val=read();
+                head=insert(head, val);
+                break;
+            case 's':
+                val=read();
+                search (head, val);
+                break;
+            case 'f':
+                head=delete_first(head);
+                break;
+            case 'l':
+                head=delete_last(head);
+                break;
+            case 'd':
+                val=read();
+                head=delete(head,val);
+                break;
+            case 'c':
+                display(head);
+                break;
+            case 'e':
+                stop=1;
+                break;
+            default:
+                fprintf(stdout, "Wrong command\n");
+                break;
+        }
+    }
+    return EXIT_SUCCESS;
+}
+
+int update(void){
+    int val;
+    fprintf(stdout,"Value:");
+    fscanf(stdin,"%d%*c",&val);
+    return val;
+}
+
+node_t  *insert(node_t *head, int val){
+    node_t *p, *q=head;
+    p=malloc(sizeof(node_t));
+    p->val=val;
+    p->nextp=NULL;
+    if (head==NULL || val<head->val){
+        p->nextp=head;
+        return p;
+    }
+    while ((q->nextp!=NULL) && (q->nextp->val<val))
+        q=q->nextp;
+    p->nextp=q->nextp;
+    q->nextp=p;
+    return head;
+}
+
+void search(node_t *head, int val){
+    node_t *p;
+    int i;
+    for (p=head, i=0; (p!=NULL) && (p->val<val);p=p->nextp, i++);
+    if ((p!=NULL) && (p->val==val)){
+        fprintf(stdout,"Element found (index=%d)\n",i);
+    }
+    else{
+        fprintf(stdout,"Element not found\n");
+    }
+}
+
+node_t *delete_first(node_t *head){
+    node_t *p;
+    if (head!=NULL){
+        p=head->nextp;
+        free(head);
+        return p;
+    }
+    return head;
+}
+
+node_t *delete_last(node_t *head){
+    node_t *p, *q=head;
+    if (q==NULL)
+        return NULL;
+    if (q->nextp==NULL){
+        free(q);
+        return NULL;
+    }
+    while (q->nextp->nextp!=NULL){
+            q=q->nextp;
+    }
+    p=q->nextp;
+    q->nextp=NULL;
+    free(p);
+    return head;
+}
+
+node_t *delete(node_t *head, int val){
+    node_t *p, *q=head;
+    if (q==NULL)
+        return NULL;
+    if (q->val==val){
+        p=q->nextp;
+        free(q);
+        return p;
+    }
+    while ((q->nextp!=NULL) && (q->nextp->val<val)){
+        q=q->nextp;
+    }
+    if ((q->nextp!=NULL)&&(q->nextp->val==val)){
+        p=q->nextp;
+        q->nextp=p->nextp;
+        free(p);
+    }
+    else
+        fprintf(stdout,"Element not found\n");
+    return head;
+}
+
+void display(node_t *head){
+    int i=0;
+    while (head!=NULL){
+        fprintf(stdout,"Element %d = %d\n",i++,head->val);
+        head=head->nextp;
+    }
+}

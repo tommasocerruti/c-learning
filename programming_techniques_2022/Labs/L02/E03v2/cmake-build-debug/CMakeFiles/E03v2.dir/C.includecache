@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Labs/L02/E03v2/library.c
+library.h
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Labs/L02/E03v2/library.h
+stdio.h
+-
+
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Labs/L02/E03v2/library.h
+

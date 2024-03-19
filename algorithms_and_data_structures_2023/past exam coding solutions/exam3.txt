@@ -1,0 +1,140 @@
+//SOLUTION 1{}
+
+int search(int *v1, int *v2, int d1, int d2){
+	int i, k, flag;
+	for (i=0;i<d1;i+=k+1){
+		flag=1;
+		for (k=0;k<d2;k++){
+			if (v1[k+i]!=v2[k]){
+				flag=0;
+				break;
+			}
+		}
+		if (flag)
+			return i;
+	}
+	return -1;
+}
+//comment: correct
+
+
+//SOLUTION 2
+
+typedef struct node_s node_t;
+
+struct node_s{
+	node_t *left, *right;
+	int key;
+}
+
+node_t *new_node(int key);
+
+void list_insert(node_t **left, node_t **right, int key, int leftRight){
+	node_t *tmp;
+	if (leftRight==0){
+		tmp=(*left)->right;
+		(*left)=new_node(key);
+		(*left)->right=tmp;
+		left=left->left;
+		return;		
+	}
+	else if (leftRight==1){
+		tmp=(*right)->left;
+		(*right)=new_node(key);
+		(*right)->left=tmp;
+		right=right->right;
+		return;		
+	}
+	else{
+		fprintf(Stderr,"Memory allocation error");
+		exit(1);
+	}
+		
+}
+
+void list_write(node_t *left, node_t *right, int leftRight){
+	node_t *tmp;
+	if (leftRight==0){
+		tmp=(left)->right;
+		while(tmp!=NULL){
+			fprintf(stdout,"%d ",tmp->key);
+			tmp=tmp->right;
+		}
+		return;		
+	}
+	else if (leftRight==1){
+		tmp=(*right)->left;
+		while(tmp!=NULL){
+			fprintf(stdout,"%d ",tmp->key);
+			tmp=tmp->left;
+		}
+		return;		
+	}
+	else{
+		fprintf(Stderr,"Memory allocation error");
+		exit(1);
+	}
+}
+
+node_t *new_node(int key){
+	node_t *node;
+	node=malloc(sizeof(node_t);
+	if (node==NULL){
+		fprintf(Stderr,"Memory allocation error");
+		exit(1);
+	}
+	node->key=key;
+	return node;
+}
+
+
+
+//SOLUTION 3
+
+
+//multiplication principle
+
+#define N 20
+//assuming every dish is of length of maximum 20 chars
+
+void menu_create_r(char **data[], int n, int step, char *solution[], int *count);
+
+void menu_create_r(char **data[], int n, int step, char *solution[], int *count){
+	int i=-1;
+	if (step>=n){
+		(*count)++;
+		fprintf(stdout,"Composition #%d: ",count);
+		for (i=0;i<n;i++)
+			fprintf(stdout,"%s ",);
+		fprintf(stdout,"\n");
+	}
+	while (data[step][++i]!=NULL){
+		solution[step]=data[step][i];
+		menu_create_r(data,n,step+1,solution,count);
+	}
+	return;
+}
+
+//wrapper
+void menu_create(char **data[], int n){
+	char *solution[];
+	int count=0;
+	solution=malloc(n*sizeof(char**));
+	if (solution==NULL){
+		fprintf(Stderr,"Memory allocation error");
+		exit(1);
+	}
+	for (i=0;i<n;i++){
+		solution[i]=malloc(N*sizeof(*char));
+		if (solution[i]==NULL){
+			fprintf(Stderr,"Memory allocation error");
+			exit(1);
+		}
+	}
+	menu_create_r(data,n,0,solution,&count);
+	for (i=0;i<n;i++){
+		free(solution[i]);
+	}
+	free(solution);
+	return;
+}

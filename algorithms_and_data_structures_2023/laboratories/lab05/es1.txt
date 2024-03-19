@@ -1,0 +1,138 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define ONE_SOLUTION 0
+#define ALL_SOLUTIONS 1
+
+void dynamicallocate(int, int **, int ***);
+void destroy(int, int *, int **);
+int magic(int **square, int *arr, int n, int level);
+int check(int **square, int n);
+void write(FILE *, int **, int);
+
+int main(int argc, char *argv[]){
+    int **square, *arr, n=atoi(argv[1]);
+    if (argc!=3){
+        fprintf(stderr, "Not enough parameters");
+        exit(-1);
+    }
+    dynamicallocate(n,&arr,&square);
+    if (magic(square, arr, n, 0)){
+        FILE *fpw;
+        if ((fpw=fopen(argv[2],"w"))==NULL){
+            fprintf(stderr,"File opening error");
+            return EXIT_FAILURE;
+        }
+    }
+    destroy(n,arr,square);
+    return EXIT_SUCCESS;
+}
+
+void dynamicallocate(int n, int **arr_add, int ***square_add){
+    int *loc_arr, **loc_square;
+    int i;
+    loc_arr=calloc(n*n,sizeof(int));
+    if (loc_arr==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    loc_square=malloc(n*sizeof(int *));
+    if (loc_square==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    for (i=0;i<n;i++){
+        loc_square[i]=calloc(n,sizeof(int));
+        if (loc_square[i]==NULL){
+            fprintf(stderr,"Memory allocation error");
+            exit(1);
+        }
+    }
+    *(arr_add)=loc_arr;
+    *(square_add)=loc_square;
+}
+
+void destroy(int n, int *arr, int **square){
+    int i;
+    free(arr);
+    for (i=0;i<n;i++)
+        free(square[i]);
+    free(square);
+}
+
+void write(FILE *fpw, int **square, int n){
+    int i, j;
+    for (i=0;i<n;i++){
+        for (j=0;j<n;j++){
+            fprintf(fpw,"%d ",square[i][j]);
+        }
+        fprintf(fpw,"\n");
+    }
+}
+
+int check(int **square, int n){
+    int sum=-1, val, d1=0, d2=0;
+    int i, j;
+    //horizontal check
+    for (i=0;i<n;i++){
+        val=0;
+        for (j=0;j<n;j++){
+            val+=square[i][j];
+        }
+        if (sum==-1)
+            sum=val;
+        if (val!=sum)
+            return 0;
+    }
+    //vertical check
+    for (j=0;j<n;j++){
+        val=0;
+        for (i=0;i<n;i++){
+            val+=square[i][j];
+        }
+        if (val!=sum)
+            return 0;
+    }
+    //diagonals check
+    for (i=0;i<n;i++){
+        d1+=square[i][i];
+        d2+=square[n-1-i][i];
+    }
+    if ((d1!=sum) || (d2!=sum))
+        return 0;
+    return 1;
+}
+
+int magic(int **square, int *arr, int n, int level){
+    int x,y,k;
+    int static count=0;
+    if (level==(n*n)){
+        if (check(square,n)){
+#if (ALL_SOLUTIONS)
+            fprintf(stdout,"Solution %d\n",++count);
+#endif
+            write(stdout,square,n);
+#if (ALL_SOLUTIONS)
+            fprintf(stdout,"\n");
+#endif
+#if (ONE_SOLUTION)
+            return 1;
+#endif
+
+        }
+        return 0;
+    }
+    x=level/n;
+    y=level%n;
+    for (k=0;k<(n*n);k++){
+        if (arr[k]==0){
+            arr[k]=1;
+            square[x][y]=k+1;
+            if (magic(square,arr,n,level+1))
+                return 1;
+            arr[k]=0;
+            square[x][y]=0;
+        }
+    }
+    return 0;
+}

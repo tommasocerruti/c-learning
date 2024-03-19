@@ -1,0 +1,60 @@
+Given one set, simple arrangement of n distinct objects of class k (k<=n), is an ordered subset composed of k objects, each can be chosen once
+Dn,k=n*(n-1)*...*(n-k+1)=n!/(n-k)!
+
+In practice: When you need to chose all ordered subset of a set of size k
+(but once you choose the element i you cannot rechoose it --> simple)
+
+Example: How many strings of 2 chars can be formed from the vowels (5)
+D=5!/(5-2)!=5*4=20 strings
+
+Implementation (data structure):
+val=malloc(n*sizeof(int));
+//the set
+mark=malloc(n*sizeof(int));
+//a flag array to check which values are already taken: mark[i]=0->i not taken/mark[i]=1->i taken
+sol=malloc(k*sizeof(int));
+//solution
+
+Implementation (algorithm):
+int arr(int *val, int *sol, int *mark, int n, int k, int count, int pos){
+    int i;
+    if (pos>=k){
+        printf("Solution %d: ,count);
+        for (i=0;i<k;i++)
+            printf("%d ",sol[i]);
+        printf("\n");
+        return count+1;
+    }
+    for (i=0;i<n;i++){
+        if (mark[i]==0){ //if not marked, i.e. chosen
+            mark[i]=1; //mark and choose the next
+            sol[pos]=val[i];
+            count=arr(val,sol,mark,n,k,count,pos+1); //recur
+            mark[i]=0; //unmark, i.e. traceback
+        }
+    }
+    return count;
+}
+
+Example:
+(AEIOU)
+AE
+AI
+AO
+AU
+EA
+EI
+EO
+EU
+IA
+IE
+IO
+IU
+OA
+OE
+OI
+OU
+UA
+UE
+UI
+UO

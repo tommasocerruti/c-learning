@@ -1,0 +1,120 @@
+//SOLUTION 1 {}
+
+#include <stdio.h>
+
+void string_search(char *str, int *start, int *length){
+	int i=-1,start=1,len,idx;
+	(*length)=-1;
+	while (str[++i]!='\0'){
+		if (start){
+			start=0;
+			len=1;
+			idx=i;
+		}
+		else if (!start && (str[i]==str[i-1]))
+			len++;
+		else{
+			if (len>(*length)){
+				(*length)=len;
+				(*start)=idx;
+			}
+			start=1;
+		}
+			
+	}
+	if (!start && (str[i]==str[i-1]) && (len>(*length))){
+		(*length)=len;
+		(*start)=idx;
+	}
+}
+
+// SOLUTION 2
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct node_s node_t;
+
+struct node_s{
+	char *string;
+	node_t *next;
+}
+
+#define N 20
+//over-sizing the strings
+
+node_t *string_split(char *str);
+
+node_t *util_malloc(char *str){
+	node_t *node;
+	node=malloc(sizeof(node_t));
+	if (node==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	node->string=strdup(str);
+	if ((node->string)==NULL){
+		free(node);
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	return node;
+}
+
+node_t *string_split(char *str){
+	int i=-1, len=0, beg=0;
+	//len indicates the length of the current substring
+	//beg indicates the starting index of it
+	char string[N+1];
+	node_t *head=NULL, *node;
+	while(str[++i]!='\0'){
+		if (str[i]!='.')
+			len++;
+		else{
+			strncpy(string,str+beg,len);
+			string[len]='\0';
+			node=util_malloc(string);
+			if (head==NULL){
+				head=node;
+				head->next=NULL;
+			}
+			else{
+				node->next=head;
+				head=node;
+			}
+			beg+=len+1;
+			len=0;
+		}
+	}
+	strncpy(string,str+beg,len);
+	node=util_malloc(string);
+	if (head==NULL){
+		head=node;
+		head->next=NULL;
+	}
+	else{
+		node->next=head;
+		head=node;
+	}
+	return head;
+}
+
+// SOLUTION 3
+
+typedef struct node_s node_t;
+
+struct node_t{
+	char *firstname, *lastname;
+	int key;
+	node *leftchild, *sibling;
+}
+
+void pre_order_print_r(node_t *head){
+	if (head==NULL)
+		return;
+	printf("%s %s %d\n",head->firstname,head->lastname,key);
+	pre_order_print_r(head->sibling);
+	pre_order_print_r(head->leftchild);
+}
+
+

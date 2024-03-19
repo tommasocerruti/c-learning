@@ -1,0 +1,4 @@
+Each line should have a maximum lenght of lmax (third parameter of the
+function). To do so, the function should either add '\n’ in substitution of
+spaces or eliminate '\n', so that the lenght is of each line is the maximum
+possible length that is smaller than the given threshold.

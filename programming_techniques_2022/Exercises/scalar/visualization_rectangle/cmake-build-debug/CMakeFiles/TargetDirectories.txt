@@ -1,0 +1,3 @@
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/visualization_rectangle/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/visualization_rectangle/cmake-build-debug/CMakeFiles/visualization_rectangle.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/visualization_rectangle/cmake-build-debug/CMakeFiles/edit_cache.dir

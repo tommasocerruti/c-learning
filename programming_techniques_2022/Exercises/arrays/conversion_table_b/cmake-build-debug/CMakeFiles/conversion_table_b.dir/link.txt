@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2021.2.1\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\conversion_table_b.dir/objects.a
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\ar.exe cr CMakeFiles\conversion_table_b.dir/objects.a @CMakeFiles\conversion_table_b.dir\objects1.rsp
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe -g -Wl,--whole-archive CMakeFiles\conversion_table_b.dir/objects.a -Wl,--no-whole-archive -o conversion_table_b.exe -Wl,--out-implib,libconversion_table_b.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\conversion_table_b.dir\linklibs.rsp

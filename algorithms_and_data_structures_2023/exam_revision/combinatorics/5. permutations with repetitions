@@ -1,0 +1,44 @@
+Given one set, arrangement of n objects (of which a,b,c,... are identical) of class n, is a permutation with repetitions
+Pn(a,b,c,...)=n!/(a!b!c!..)
+
+In practice: When you choose all the possible orderings of a set but some elements are identical
+
+Example: How many anagrams of the string ORO (note: 2 identical chars)
+P=3!/2!=3 strings
+
+Implementation (data structure):
+//note: n(cardinality of multiset) -> n_dist(cardinality of distinct elements)
+val_dist=malloc(n_dist*sizeof(int));
+//the set of only distinct objects
+mark=malloc(n_dist*sizeof(int));
+//a flag array to check which values are already taken: mark[i]>0->i not taken (since could be more than one)/mark[i]=0->i taken
+//mark[i]=x, where x is the number of repetitions that i can still take, generally it is 1, but if repetitions (a times), it is a
+sol=malloc(n*sizeof(int));
+//solution
+
+Implementation (algorithm):
+//just like simple arrangements, but k=n, and we are selecting from the distinct values of n
+int perm_rep(int *val_dist, int *sol, int *mark, int n, int n_dist, int count, int pos){
+    int i;
+    if (pos>=n){
+        printf("Solution %d: ,count);
+        for (i=0;i<n;i++)
+            printf("%d ",sol[i]);
+        printf("\n");
+        return count+1;
+    }
+    for (i=0;i<n_dist;i++){
+        if (mark[i]>0){ //if not empty choose, i.e. chosen all the times
+            mark[i]--; //decrement and choose the next
+            sol[pos]=val_dist[i];
+            count=perm_rep(val_dist,sol,mark,n,n_dist,count,pos+1); //recur
+            mark[i]++; //increment, i.e. traceback
+        }
+    }
+    return count;
+}
+
+Example:
+ARA
+RAA
+AAR

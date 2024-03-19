@@ -1,0 +1,3 @@
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/arrays/text_formatting/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/arrays/text_formatting/cmake-build-debug/CMakeFiles/text_formatting.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/arrays/text_formatting/cmake-build-debug/CMakeFiles/rebuild_cache.dir

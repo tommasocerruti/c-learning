@@ -1,0 +1,273 @@
+//SOLUTION 1
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int *merge3(int *a, int *b, int *c, int na, int nb, int nc){
+	int nd=na+nb+nc;
+	int *d;
+	d=malloc(nd*sizeof(int));
+	if (d==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit (1);
+	}
+	int ia=0,ib=0,ic=0,id=0;
+	while (((ia<na)&&(ib<nb))||((ia<na)&&(ic<nc))||((ib<nb)&&(ic<nc))){
+		if ((ia<na)&&(a[ia]<=b[ib])&&(a[ia]<=c[ic]))
+			d[id++]=a[ia++];
+		else if ((ib<nb)&&(b[ib]<a[ia])&&(b[ib]<=c[ic]))
+			d[id++]=b[ib++];
+		else if ((ic<nc)&&(c[ib]<a[ia])&&(c[ic]<b[ib]))
+			d[id++]=c[ic++];
+	}
+	/*after the execution of this loop we have two arrays whose values have been completely inserted in the array in order
+	however one of the three still needs to finish, hence we need to find it and finish the merging*/
+	while(ia<na)
+		d[id++]=a[ia++];
+	while(ib<nb)
+		d[id++]=b[ib++];
+	while(ic<nc)
+		d[id++]=c[ic++];
+	return d;	
+}
+
+//comment: correct
+
+//SOLUTION 2
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+typedef struct list_s list_t;
+struct list_s{
+	char *surname, *name;
+	list_s *next;	
+}
+
+list_t *create_node(char *surname, char*name){
+	list_t *node;
+	node=malloc(sizeof(list_t));
+	if (node==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit (1);
+	}
+	node->surname=strdup(surname);
+	if (node->surname==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit (1);
+	}
+	node->name=strdup(name);
+	if (node->name==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit (1);
+	}
+	return node;
+}
+
+int list_insert_in_order(list_t **headP, char *surname, char *name){
+	list_t *prev=*headP, *next=prev->next, *node, *tmp;
+	if (head==NULL){
+		fprintf(stderr,"Empty list");
+		return 1;
+	}
+	//check first element, and then check with a loop
+	if (strcmp(surname,prev->surname)<=0){
+		if (strcmp(surname,prev->surname)==0){
+			//same surname, then check name
+			if (strcmp(name,prev->name)==0){
+				fprintf(stdout,"Person already present in the list!");
+				return 1;
+			}
+		}
+		else{
+			node=create_node(name,surname);
+			node->next=prev;
+			(*headP)=node;
+			return 0;
+		}
+	}
+	// the idea is to move with two pointers to be able to modify the list without going too far
+	while(next!=NULL){
+		if (strcmp(surname,next->surname)<=0){
+			if (strcmp(surname,next->surname)==0){
+				//same surname, then check name
+				if (strcmp(name,next->name)==0){
+					fprintf(stdout,"Person already present in the list!");
+					return 1;
+				}
+			}
+			else{
+				node=create_node(name,surname);
+				prev->next=node;
+				node->next=next;
+				return 0;
+			}
+		}
+		next=next->next;
+		prev=prev->next;
+	}
+	// if this code is reached, then element should be place last in the list
+	node=create_node(name,surname);
+	prev->next=node;
+	return 0;
+}
+
+//comment: improve the list insertion
+
+//SOLUTION 3
+
+/*Since we need to find the ordering of the set we use simple permutations.
+Once we find a possible ordering, we check its difference and compare it to the maximum difference.
+The maximum value is then returned.*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void evaluate(float *sol, float best_sol[], float *best_diff, int total_level);
+
+void permute(int taken[], float sol[], float best_sol[], float *best_diff, float balance[], float *min, float *max, int level, int tot_level){
+	int i;
+	if (level==tot_level){
+		evaluate(sol,best_sol,best_diff,tot_level);
+	}
+	for (i=0;i<tot_level;i++){
+		if (taken[i]==0){
+			taken[i]=1;
+			sol[level]=balance[i];
+			permute(taken,sol,best_sol,best_diff,balance,min,max,level+1,tot_level);
+			taken[i]=0;
+		}
+	}
+	return;
+}
+
+void evaluate(float *sol, float best_sol[], float *best_diff, int total_level){
+	int i;
+	float tot=0, cmin=sol[0], cmax=sol[0];
+	for (i=0;i<tot_level;i++){
+		tot+=sol[i];
+		if (cmin<tot)
+			cmin=tot;
+		if (cmax>tot)
+			cmax=tot;
+	}
+	if ((cmax-cmin)>(*best_diff)){
+		*best_diff=cmax-cmin;
+		for (i=0;i<tot_level;i++)
+			best_sol[i]=sol[i];
+	}
+	return;
+}
+
+//comment: use simple permutation with an evaluate function at the termination condition
+
+
+
+
+
+
+// CORRECT EX 2
+
+{}
+
+int list_insert_in_order(list_t **headP, char *surname, char *name){
+	list_t *head, *ptr, *node;
+	head=*headP;
+	//Initial search
+	for (node=head;(node!=NULL) && (strcmp(surname,node->surname)<=0);node=node->next){
+		if (strcmp(surname,node->surname)==0 && strcmp(name,node->name)==0)
+			return 0;
+	}
+	node=malloc(sizeof(list_t));
+	if (node==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	node->surname=strdup(surname);
+	if (node->surname==NULL){
+		free(node);
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	node->name=strdup(name);
+	if (node->name==NULL){
+		free(node->surname);
+		free(node);
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	//Insertion ahead
+	if (head==NULL || strcmp(node->surname,surname)<0 || strcmp(node->surname,surname)== 0&& strcmp(node->name,name)<0){
+		node->next=head;
+		*headP=head;
+		return 1;
+	}
+	//Insertion in the middle (or end)
+	ptr=head;
+	while(ptr->next!=NULL && (strcmp(surname,ptr->next->surname)>0 || (strcmp(surname,ptr->next->surname)==0 && (strcmp(name,ptr->next->name)>0))
+		ptr=ptr->next;
+	node->next=ptr->next;
+	ptr->next=node;
+	return 1;
+
+}
+
+//HARD EXERCISE
+
+
+typedef struct alpha_s{
+	char c;
+	int value;
+} alpha_t;
+
+int index_find(alpha_t *letters, char *w, int *letter_used){
+	int i; 
+	for (i=0;i<letter_used;i++)
+	if (letters[i].c==toFind)
+		return i;
+	return -1;
+}
+
+void setup(alpha_t *letters, char *w, int *letter_used){
+	int i;
+	for (i=0;i<strlen(w);i++){
+		if (index_find(letters,w[i],*letter_used)==-1)
+			letters[(*letters_used)++].c=w[i];
+	}
+	return;
+}
+
+int solve(alpha_t *letters, int *taken, int start, char *w1, char *w2, char *w3, int letter_used){
+	int solved, i;
+	if (solved >= letter_used){
+		solved=solution_check(letters,w1,w2,w3,letter_used);
+		if (solved!=0)
+			solution_write(letters,letters_used);
+		return solved;
+	}
+	for (i=0;i<INT_NUM;i++){
+		if (taken[i]==0){
+			letters[start].value=i;
+			taken[i]=1;
+			if (solve(letters,taken,start+1,w1,w2,w3,letters_used))
+				return 1;
+			letters[start].value=-1;	
+			taken[i]=0;
+		}
+	}
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+

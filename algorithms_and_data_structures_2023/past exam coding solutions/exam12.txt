@@ -1,0 +1,128 @@
+//EXERCISE 1
+
+int subMat_max(int **mat, int r, int c, int n){
+
+    int i1, j1, i2, j2, sum,flag=0,max;
+
+    if (r<n||c<n)
+
+        return -1;
+
+    for (i1=0;i1<r-n;i1++){
+
+        for (j1=0;j1<c-n;j1++){
+
+            sum=0;
+
+            for (i2=i1;i2<n+i1;i2++){
+
+                for (j2=j1;j2<n+j1;j2++){
+
+                    sum+=mat[i2][j2];
+
+                }
+
+            }
+
+        if (!flag || sum>max)
+
+            max=sum;
+
+        if (!flag)
+
+            flag=1;
+
+        }
+
+
+    }    
+
+    return max;
+
+}
+
+
+// EXERCISE 2 {}
+
+/*idea: 
+- find the node that splits the two nodes with keys key1 and key2
+- call the function to find the distance to that node with respect to both the other two nodes
+- the overall distance between the two nodes will be just the sum of the distances from that node
+*/
+
+
+typedef struct node node_t;
+
+struct node{
+	int key;
+	node_t *l, *r;
+}
+
+int distance_r(node_t *node, int key);
+node_t *start(node_t *root, int key1, int key2);
+
+int distance(node_t *root, int key1, int key2){
+	if (root==NULL)
+		exit(1);
+	node_t *start;
+	start=start(root,key1,key2);
+	return distance(start,key1)+distance(start,key2);
+}
+
+node_t *start(node_t *root, int key1, int key2){
+	if (root==NULL){
+		exit(1);
+	}
+	else if(root->key>key1 && root->key>key2)
+		return start(root->left,key1,key2);
+	else if (root->key<key1 && root->key<key2)
+		return start(root->right,key1,key2);
+	else
+		return node_t;
+}
+
+int distance_r(node_t *node, int key){
+	if (node==NULL){
+		exit(1);
+	}
+	else if(node->key>key)
+		return 1+distance_r(node->left,key);
+	else if (node->key<key)
+		return 1+distance_r(node->right,key);
+	else
+		return 0;
+}
+
+// EXERCISE 3 {}
+
+/*idea: 
+- the order in which we choose the books is irrelevant
+- we cannot choose the same genre twice (and the same book of course)
+------> SIMPLE COMBINATIONS (implemented with a further check at the termination condition)
+
+*/
+
+int comb(int *vet, int *sol, int n, int k, int m, int start, int pos, int count){
+	int i;
+	if (pos==k){
+		if (check)
+			return count+1;
+	}
+	for (i=start;i<n;i++){
+		sol[pos]=i;
+		count=comb(val,sol,n,k,m,start+1,pos+1,count);
+	}
+	return count;
+}
+
+int check(int *vet, int *sol, int k){
+	int *check;
+	check=calloc(k*sizeof(int));
+	if (check==NULL)
+		exit(1);
+	int i;
+	for (i=0;i<k;i++)
+		if(++check[vet[sol[i]]]>1)
+			return 0;
+	return 1;
+}

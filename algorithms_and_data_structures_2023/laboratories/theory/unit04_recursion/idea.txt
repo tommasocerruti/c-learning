@@ -1,0 +1,6 @@
+Approach to recursive problems:
+1. What's the simplest possible input (recognize the base case)
+2. Play arounf with examples and visualize
+3. Relate hard cases to simpler cases
+4. Generalize the pattern
+5. Write code by combining recursive pattern and base case

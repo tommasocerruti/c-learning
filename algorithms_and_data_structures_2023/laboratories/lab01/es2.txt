@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+#define IDL 4
+#define MNR 100
+
+// sorting using insertion sort
+
+typedef struct{
+    float x,y;
+} coord;
+
+typedef struct{
+    coord c1, c2;
+    float area, perimeter;
+    char *id;
+} rect;
+
+void read(char *, rect **, int *);
+void sort1(rect **, int);
+void sort2(rect **, int);
+void save(char *, rect *, int);
+void destroy (rect **, int);
+
+int main(int argc, char *argv[]) {
+    int n=0;
+    rect *rects;
+    read(argv[1], &rects, &n);
+    sort1(&rects, n);
+    save(argv[2], rects, n);
+    sort2(&rects, n);
+    save(argv[3], rects, n);
+    destroy(&rects, n);
+    return EXIT_SUCCESS;
+}
+
+void update(char *filename, rect **rects, int *n){
+    int i, flag, l;
+    float base, height;
+    char name[IDL+1];
+    coord c;
+    FILE *fp;
+    if ((fp=fopen(filename,"r"))==NULL){
+        fprintf(stderr,"Error opening input file: %s",filename);
+        exit(1);
+    }
+    fscanf(fp,"%d",&l);
+    (*rects)=malloc(l*sizeof(rect));
+    if ((*rects)==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    while (fscanf(fp,"%s %f %f",name,&c.x,&c.y)!=EOF && (*n)<MNR){
+        flag=0;
+        for (i=0;i<(*n);i++){
+            if (strcmp(name,(*rects)[i].id)==0){
+                (*rects)[i].c2=c;
+                base=fabs((*rects)[i].c1.x-(*rects)[i].c2.x);
+                height=fabs((*rects)[i].c1.y-(*rects)[i].c2.y);
+                (*rects)[i].area=base*height;
+                (*rects)[i].perimeter=2*base+2*height;
+                flag=1;
+            }
+        }
+        if (flag==0){
+            (*rects)[*n].id=strdup(name);
+            (*rects)[*n].c1=c;
+            (*n)++;
+        }
+    }
+    fclose(fp);
+}
+
+// 1 3 5 7 4
+void sort1(rect **rects, int n){
+    // compare by area
+    int i,j;
+    rect current;
+    for (i=1;i<n;i++){
+        current=(*rects)[i];
+        for (j=i-1;j>=0 && (((*rects)[j].area)>(current.area));j--){
+            (*rects)[j+1]=(*rects)[j];
+            (*rects)[j]=current;
+        }
+    }
+}
+
+void sort2(rect **rects, int n){
+    // compare by perimeter
+    int i,j;
+    rect current;
+    for (i=1;i<n;i++){
+        current=(*rects)[i];
+        for (j=i-1;j>=0 && (((*rects)[j].perimeter)>(current.perimeter));j--){
+            (*rects)[j+1]=(*rects)[j];
+            (*rects)[j]=current;
+        }
+    }
+}
+
+void save(char *filename, rect *rect, int n){
+    FILE *fp;
+    int i;
+    if ((fp=fopen(filename,"w"))==NULL){
+        fprintf(stderr,"Error opening output file: %s",filename);
+        exit(1);
+    }
+    for (i=0; i<n; i++)
+        fprintf(fp,"%s\n",rect[i].id);
+    fclose(fp);
+}
+
+void destroy (rect **rects, int n){
+    int i;
+    for (i=0;i<n;i++)
+        free((*rects)[i].id);
+    free(*rects);
+}

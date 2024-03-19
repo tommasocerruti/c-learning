@@ -1,0 +1,44 @@
+#include <stdio.h>
+#define N 256
+#define MAX 20
+
+int freq(char *string, int *freq);
+int anags(char *anag, int *freq, int len, int pos, int count);
+
+int main(void){
+    int freqs[N], len;
+    char word[MAX], anag[MAX];
+    scanf("%s",word);
+    len=freq(word,freqs);
+    anag[len]='\0';
+    return anags(anag,freqs,len,0,0);
+}
+
+int freq(char *string, int *freqs){
+    int i;
+    for (i=0;i<N;i++)
+        freqs[i]=0;
+    for (i=0;string[i]!='\0';i++)
+            freqs[string[i]]++;
+    return i;
+}
+
+int anags(char *anag, int *freqs, int len, int pos, int count){
+    int i;
+    if (pos>=len){
+        printf("%s\n",anag);
+        return count+1;
+    }
+    for (i=0;i<N;i++){
+        if (freqs[i]>0){
+            freqs[i]--;
+            anag[pos]=i;
+            count=anags(anag,freqs,len,pos+1,count);
+            freqs[i]++;
+        }
+    }
+    return count;
+}
+
+//this solution uses permutations with repetitions, based on ASCII
+//moreover the order of the solutions is in order by ASCII

@@ -1,0 +1,139 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+#define MAX 100
+
+char **read_lab(FILE *, int *, int *);
+void find_start(char **, int, int, int *, int *);
+int first_sol(char **mat, int l, int x, int y, int ka);
+int all_sol(char **mat, int l, int x, int y, int ka, int R);
+// first_sol would return 1
+// all_sol would not return 1
+// best_sol would store the current solution, the best solution, and the number of steps of both
+void print_sol(char **, int, FILE *);
+
+int main(int argc, char *argv[]){
+    int R,C;
+    int i, j;
+    char **mat;
+    FILE *fp;
+    if (argc!=2){
+        fprintf(stderr,"Wrong number of arguments");
+        return EXIT_FAILURE;
+    }
+    if ((fp=fopen(argv[1],"r"))==NULL){
+        fprintf(stderr,"File opening error");
+        return EXIT_FAILURE;
+    }
+    mat=read_lab(fp,&R,&C);
+    fclose(fp);
+    find_start(mat,R,C,&i,&j);
+    all_sol(mat, 0, i, j, 4,R);
+    for (i=0;i<R;i++)
+        free(mat[i]);
+    free(mat);
+    return EXIT_SUCCESS;
+}
+
+char **read_lab(FILE *fp, int *R, int *C){
+    int i;
+    char **mat;
+    fscanf(fp,"%d %d\n",R,C);
+    mat=malloc((*R)*sizeof(char *));
+    if (mat==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    for (i=0;i<(*R);i++){
+        mat[i]=malloc((*C)*sizeof(char));
+        if (mat[i]==NULL){
+            fprintf(stderr,"Memory allocation error");
+            exit(1);
+        }
+    }
+    i=0;
+    while (fgets(mat[i++],MAX,fp)!=NULL);
+    return mat;
+}
+
+void find_start(char **mat, int R, int C, int *i, int *j){
+    int a, b, found=0;
+    for (a=0;a<R;a++){
+        for (b=0;b<C;b++){
+            if (mat[a][b]=='@'){
+                found=1;
+                (*i)=a;
+                (*j)=b;
+                break;
+            }
+        }
+        if (found)
+            break;
+    }
+    if (!found){
+        fprintf(stderr,"Starting point not found");
+        exit(1);
+    }
+}
+
+void print_sol(char **sol, int R, FILE *fp){
+    int i;
+    for (i=0;i<R;i++){
+        fprintf(fp,"%s",sol[i]);
+    }
+    if (fp!=stdout)
+        fclose(fp);
+}
+
+// mat is the matrix of the maze
+// x, y is where you are currently
+// ka is the forbidden move since you just came from there
+int first_sol(char **mat, int l, int x, int y, int ka){
+    int offset[4][2]={{1,0},{0,1},{-1,0},{0,-1}};
+    int k, kap;
+    for (k=0;k<4;k++){
+        if (k!=ka){
+            if (mat[x+offset[k][0]][y+offset[k][1]]=='#'){
+                mat[x+offset[k][0]][y+offset[k][1]]='X';
+                return 1;
+                mat[x][y]='#';
+            }
+            else if (mat[x+offset[k][0]][y+offset[k][1]]==' '){
+                if (k>1)
+                    kap=k-2;
+                else
+                    kap=k+2;
+                if (first_sol(mat,l+1,x+offset[k][0],y+offset[k][1],kap)){
+                    mat[x+offset[k][0]][y+offset[k][1]]='x';
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+int all_sol(char **mat, int l, int x, int y, int ka, int R){
+    int offset[4][2]={{1,0},{0,1},{-1,0},{0,-1}};
+    int k, kap;
+    for (k=0;k<4;k++){
+        if (k!=ka){
+            if (mat[x+offset[k][0]][y+offset[k][1]]=='#'){
+                mat[x+offset[k][0]][y+offset[k][1]]='X';
+                print_sol(mat,R,stdout);
+                mat[x][y]='#';
+                return 0;
+            }
+            else if (mat[x+offset[k][0]][y+offset[k][1]]==' '){
+                mat[x+offset[k][0]][y+offset[k][1]]='x';
+                if (k>1)
+                    kap=k-2;
+                else
+                    kap=k+2;
+                all_sol(mat,l+1,x+offset[k][0],y+offset[k][1],kap,R);
+                mat[x+offset[k][0]][y+offset[k][1]]=' ';
+            }
+        }
+    }
+    return 0;
+}

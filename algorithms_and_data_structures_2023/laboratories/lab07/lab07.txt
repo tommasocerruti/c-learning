@@ -1,0 +1,196 @@
+Algorithms and Data Structures
+Laboratory number 07
+--------------------
+
+Exercise 01 (A-D)
+-----------------
+
+The directory
+lab07-BSTLibrary
+includes a BST library, i.e. made up of the following files:
+* dataInt.c, dataInt.h
+  define keys of integer values and all corresponding key-related
+  functions.
+* dataStr.c, dataStr.h
+  define keys of string types and all corresponding key-related
+  functions.
+  The key field of the BST is an integer value.
+* tree.c, tree.h
+  contain all BST related functions (readTree, writeTree, insert,
+  search, etc.).
+* client.c
+  includes the main program.
+  A while loop allows the user to introduce commands and to run all
+  main BST library functions.
+
+Enable the version of the library using integer keys.
+Verify the library and run it by using the input file
+inInt.txt (storing integer values).
+
+Afterward, extend the library by writing a new file
+treeAddition.c
+containing the following described functions.
+
+Finally, check those functions by calling them from the main program.
+The rest of the library should not be changed (or changed as little as
+possible, e.g., additions of prototypes, etc..).
+
+Exercise 01-A.
+void countNode (node_t *root, int *array);
+This function:
+- Receives a pointer referencing a root of a tree (root),
+  and an array (array) of three integers.
+  All array elements are initially equal to zero.
+- Stores in the three elements of the array the number of
+  nodes with no child, with one single child, and with two children,
+  respectively.
+
+Exercise 01-B.
+void countLevel (node_t * root, int *array, int l);
+This function:
+- Receives a pointer referencing a root of a tree (root),
+  an array of integers (array) whose size is equal to the height of
+  the tree, and a recursion level l.
+  All array elements are initialized to zero.
+- Stores in each element array[i] the total number of
+  nodes of the tree at level i.
+
+Exercise 01-C.
+void countPath (node_t * root, int *np, int *length);
+This function:
+- Receives a pointer referencing a root of a tree (root).
+- Returns in np the number of paths leaving the root and ending
+  into a leaf, and the sum of the lengths (number of edges) of all
+  those paths.
+
+Exercise 01-D.
+int visit (node_t *root, int key1, int key2);
+This functions:
+* Receives a BST root pointer and two integer values
+  as parameters
+* Evaluates (and prints-out) the distance in the BST of the
+  two keys.
+  The distance between two keys in a BST is defined as the
+  number of edges which it is necessary to traverse to reach
+  one key from the other one.
+
+Example
+-------
+For example, in the following tree,
+
+          10
+       /     \
+      5       20
+    /  \     /  \
+   2    8  15   30
+           /     \
+          13     45
+
+the distance between keys 2 and 15 is equal to 4 (edges), and the
+distance between keys 45 and 8 is equal to 5 (edges).
+
+
+
+Exercise 02 (optional)
+----------------------
+
+Considerations
+--------------
+
+There are applications in which it may be useful to have
+records (i.e., data fields) associated to more than one key.
+For example, it may be useful to associate every student's
+information to the student last name and first name pair, and to
+his/her register number value as well.
+In this way, it will be possible to search for a student using
+both these keys, obtaining the same performance.
+
+
+
+Specifications
+--------------
+
+Re-using (and freely modifying) the library
+lab07-BSTLibrary
+solve the following problem.
+
+A file includes information about students.
+For each student the file stores 6 fields (space separated)
+on the same row:
+
+- register-number (long integer value or string on 6 digits)
+- last-name (30 chars, at most, for each one)
+- first-name (30 chars, at most, for each one)
+- birth-date (format dd/mm/yyyy)
+- program (string of 5 chars)
+- enrollment-year (integer value)
+
+File lab07-input.txt shows a correct example of such a file.
+
+Write a program able to execute the following set of commands:
+
+- load name
+  reads the file *name* and stores its content in a
+  proper data structure.
+
+- searchS last first
+  searches in the data structure all data fields related to the
+  student with last and first name equal to *last* and *first*,
+  respectively.
+
+- searchN integer
+  searches in the data structure all data related to the student
+  with register number equal to the *integer* value.
+
+- save name
+  stores into the file *name* all students information (with the same
+  format of the input file).
+
+- quit
+  stops the program.
+
+
+
+Complexity constraint
+---------------------
+
+The data structure has to allow searches (for both the searchS
+and the searchN commands) with a logarithmic cost in term of number
+of students.
+
+
+
+Suggestion
+----------
+
+The core idea is to use a BST to store the data and to allow for
+searches with a logarithmic cost.
+As the specification requires 2 different searching keys, this would
+imply two different BSTs, one organized using the first key the other
+organized using the second one.
+To avoid data duplication it is however possible to merge two "physically"
+separated BSTs into a single BSTs.
+This BST will have in each node:
+- all required data fields
+- two set of pointers.
+  The first set of pointers will be used to order data following the
+  last and first name pair.
+  The second one will be used to order data following the register number.
+
+In other words the ADT used for the BST should have more or less the
+following definition:
+
+typedef struct elem_t {
+  char *name;
+  char *date;
+  char *course;
+  int year;
+  int code;
+  struct elem_t *left_1;
+  struct elem_t *right_1;
+  struct elem_t *left_2;
+  struct elem_t *right_2;
+} elem_s;
+
+
+

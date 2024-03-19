@@ -1,0 +1,132 @@
+//SOLUTION 1
+
+void mult (int *v1, int *v2, int n, int **pv){
+	int *v;
+	v=calloc(2*n,sizeof(int));
+	if (v==NULL){
+		printf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	int i,d,r,num,flag=0;
+	for (i=n-1;i>=0;i--){
+		num=v1[i]*v2[i];
+		if (flag){
+			num+=d;	
+			flag=1;
+		}
+		//since we are multiplying digits, the maximum number cannot exceed 99 (81)
+		d=num/10;
+		//hence we know for sure that d is less than 10, which makes it easy to add
+		r=num%10
+		if (d>0)
+			flag=1;
+		v[n+i]+=r;
+	}
+	v[n-1]=d; //might be zero as well
+	(*pv)=v;	
+	return;
+}
+
+//comment: this solution is wrong because it just does multiplication digit by digit, we need two iterations
+
+
+
+void mult(int *v1, int *v2, int n, int **pv) {
+    int i, j, carry, tmp;
+
+    // allocate memory for the result array
+    *pv = (int *) calloc(2 * n, sizeof(int));
+
+    // implement sum-and-shift algorithm
+    for (i = n-1; i >= 0; i--) {
+        carry = 0;
+        for (j = n-1; j >= 0; j--) {
+            tmp = (*pv)[i + j + 1] + v1[i] * v2[j] + carry;
+            (*pv)[i + j + 1] = tmp % 10;
+            carry = tmp / 10;
+        }
+        (*pv)[i] += carry;
+    }
+}
+
+
+//SOLUTION 2
+
+typedef struct node_s node_t;
+struct node_s{
+	int key;
+	node_t *leftc, *rightc;
+}
+
+//the idea is to visit the tree in in_order and inserting at each visit
+//in this way first we visit the node, recur to the left, and when returned back to the node we insert
+//also post_order would work the same but pre_order would be more difficult to hangle
+
+struct node *create_node(int key);
+
+void tree_dup(node_t *root){
+	
+	if (root==NULL)
+		return;//termination condition
+	
+	tree_dup(root->left);//recur to the left
+
+	node_t *tmp;
+	tmp=root->left;
+	root->left=create_node(root->key);
+	root->left->left=tmp;
+	root->left->right=NULL;
+
+	tree_dup(root->right);
+}
+
+struct node *create_node(int key){
+	node_t *node;
+	node=malloc(sizeof(node_t));
+	if (node==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	node->key=key;
+	return node;
+}
+
+//SOLUTION 3
+
+{}
+#define N 30
+typedef struct producer_s producer_t;
+typedef struct product_s product_t;
+
+struct producer_s{
+	char name[N+1];
+	product_t *products;
+	producer_t *next;
+}
+
+struct producer_s{
+	char name[N+1];
+	float price;
+	product_t *next;
+}
+
+//wrapper
+float price(producer_t *producers, char *producer_name, char *product_name){
+	return price_r(producers, producers->products, producer_name, product_name);
+}
+
+//recursive function
+float price_r(producer_t *producers, product_t *products, char *producer_name, char *product_name, int status){
+	if (!status && ((producers==NULL)||(strcmp(producers->name,producer_name)>0))
+		fprintf(stderr,"PRODUCER NOT FOUND");
+	else if (!status && strcmp(producers->name,producer_name)==0)
+		return price_r(producers,producers->products,producer_name,product_name,1);
+	else if (!status)
+		return price_r(producers->next,products,producer_name,product_name,0);
+	if (status && ((products==NULL)||(strcmp(products->name,product_name)>0))
+		fprintf(stderr,"PRODUCT NOT FOUND");
+	else if (status && strcmp(producers->name,producer_name)==0)
+		return products->price;
+	else if (status)
+		return price_r(producers,products->next,producer_name,product_name,0);	
+}

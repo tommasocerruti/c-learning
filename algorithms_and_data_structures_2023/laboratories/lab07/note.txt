@@ -1,0 +1,9 @@
+Note that in order to work with the BST library you need to modify the CMakeLists.txt
+
+// replace main.c with all the c files that should be executed
+cmake_minimum_required(VERSION 3.22)
+project(laboratories C)
+
+set(CMAKE_C_STANDARD 99)
+
+add_executable(laboratories main.c)

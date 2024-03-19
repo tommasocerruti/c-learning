@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/tomma/OneDrive/Desktop/reading_material/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/area_of_right_triangle/main.c
+stdio.h
+-
+math.h
+-
+stdio.h
+-
+

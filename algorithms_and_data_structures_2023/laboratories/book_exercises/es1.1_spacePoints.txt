@@ -1,0 +1,17 @@
+#include <stdio.h>
+#define MAX 10
+
+//using dynamic memory allocation
+
+typedef struct{
+    float x, y, z;
+    float dis;
+} coord_t;
+
+coord_t** update(int i);
+
+int main(int argc, char *argv[]){
+    coord_t coords[MAX];
+    int n;
+
+};

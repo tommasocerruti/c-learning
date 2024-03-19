@@ -1,0 +1,8 @@
+insert
+data
+in
+a
+BST
+with
+string
+keys

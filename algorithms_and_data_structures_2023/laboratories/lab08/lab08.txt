@@ -1,0 +1,76 @@
+Algorithms and Data Structures
+Laboratory number 08
+--------------------
+
+Exercise 01 (A-C)
+-----------------
+
+A file includes a line for each student with the following fields: 
+
+registerNumber lastName numberCreditLoaded numberCreditPassed
+
+where:
+
+* registerNumber is a unique string of exactly 9 decimal digits.
+* lastName is a string of 100 characters at most (with no space)
+  defining the name of the student.
+* numberCreditLoaded and numberCreditPassed are integer values
+  indicating the number of overall credits in the student curricula
+  and the number of credits passed by the student.
+
+The following is a correct input file:
+
+012345678 CaroEmerald 180 170
+012345670 ErinBrockovich 110 55
+012345675 MaroonFive 140 110
+012345673 BlackJohn 170 120
+012345671 NeYo 140 110
+
+Write an application that using
+
+* the BST library stored in directory lab07-BSTLibrary
+* the hash table library stored in directory lab08-HTLibrary
+
+is able to (exercise A):
+
+* Receive two file names on the command line.
+* Store the content of the first file in a BST with string keys
+  (the register number), using the BST library functions.
+* Visit the tree in in-order and save all data in a hash table,
+  using the BST and the hash-table library functions.
+* Traverse the hash table, from the first to the last element of the
+  table and for each element of the table store all elements within
+  the connected list in the output file, using (modified) hash-table
+  library functions.
+
+After that, write the following functions (exercise B and C):
+
+B. link listUnique (ST st);
+   Creates a unique list storing all elements included into all chaining
+   lists of the hash-table st.
+   It returns the pointer (of type link) to the list head.
+   Chaining lists have to remain in placed untouched (i.e., the list has
+   to include only "new/duplicated" elements).
+   The order of the elements within the generated list is undefined.
+
+C. int listAndBST (link list, node_t *rp);
+   - Traverses the list created by function listUnique
+   - Searches all elements in the original BST rp
+   - Prints-out the level of the tree at which each element is stored.
+
+Notice that it is possible to:
+* Add (or remove) parameters to the previous functions
+* Use wrapper functions
+* Use utility (other) functions
+if deemed necessary.
+
+
+
+Observation
+-----------
+
+For those interested, directory
+lab08-HTReal
+includes a professional hast table (the symbol table, i.e., "st") library.
+Please, read the documentation available (with a browser) in the
+sub-directory doc to better understand how to use it.

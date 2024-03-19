@@ -1,0 +1,3 @@
+C:/Users/tomma/OneDrive/Desktop/reading_material/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/simple_encryption/cmake-build-debug/CMakeFiles/simple_encryption.dir
+C:/Users/tomma/OneDrive/Desktop/reading_material/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/simple_encryption/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/tomma/OneDrive/Desktop/reading_material/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/simple_encryption/cmake-build-debug/CMakeFiles/rebuild_cache.dir

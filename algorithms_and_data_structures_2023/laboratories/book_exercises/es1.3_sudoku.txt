@@ -1,0 +1,27 @@
+#include <stdio.h>
+#define NUM 9
+
+//using dynamic memory allocation
+//idea: fixed size array[9]=[(1,0),(2,0),...,(9,0)]
+
+typedef struct{
+    int num, occ;
+}val;
+
+int main(int argc, char *argv[]){
+    int i;
+    val vals[NUM];
+    FILE *fp;
+    if ((fp=fopen(argv[1],"r")==NULL){
+        fprintf(stderr,"Error file opening");
+        exit(1);
+    }
+    for (i=0;i<NUM;i++){
+        vals[i].num=i+1;
+
+    }
+
+
+};
+
+//{}

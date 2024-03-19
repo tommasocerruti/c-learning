@@ -1,0 +1,16 @@
+Rossi Giovanna RSSGVN01R12C385Z 4
+1 3 8 8 8
+2 5 6 4 6 4 6
+3 2 10 10
+8 7 1 2 5 6 8 4 3
+
+Cerruti Tommaso CRRTMS02P26D969D 5
+1 3 8 8 8
+2 5 6 4 6 4 6
+3 2 10 10
+7 5 8 8 8 8 8
+8 4 7 7 6 5
+
+Mauriziano Alberto MRZALB00D22C519D 2
+1 3 8 8 8
+8 7 1 2 5 6 8 4 3

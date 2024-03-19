@@ -1,0 +1,102 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define MAXL 100
+
+void read_strings(char ***, int *, char *);
+void sort_strings1(char  ***, int);
+void sort_strings2(char  ***, int);
+void write_strings(char **, int, char *);
+void destroy_strings(char **, int);
+
+int main(int argc, char *argv[]){
+    int n;
+    char **mat;
+    read_strings(&mat, &n, argv[1]);
+    sort_strings1(&mat, n);
+    sort_strings2(&mat, n);
+    write_strings(mat, n, argv[2]);
+    destroy_strings(mat, n);
+    return 0;
+};
+
+void read_strings(char ***mat, int *n, char *filename){
+    FILE *fp;
+    int i;
+    char word[MAXL+1], **mat_loc;
+    if ((fp=fopen(filename,"r"))==NULL){
+        fprintf(stderr,"File %s opening error",filename);
+        exit(1);
+    }
+    fscanf(fp,"%d",n);
+    mat_loc=malloc((*n)*sizeof(char *));
+    if (mat_loc==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    for (i=0;i<(*n);i++){
+        fscanf(fp,"%s",word);
+        mat_loc[i]=strdup(word);
+        if (mat_loc[i]==NULL){
+            fprintf(stderr,"Memory allocation error");
+            exit(1);
+        }
+    }
+    fclose(fp);
+    *mat=mat_loc;
+}
+
+void sort_strings1(char ***mat, int n){
+    // exchanging the value pointed by the pointer
+    int i, j;
+    char **mat_loc, *current;
+    mat_loc=*mat;
+    for (i=1;i<n;i++){
+        current=malloc(sizeof(mat_loc[i]));
+        strcpy(current,mat_loc[i]);
+        j=i;
+        while ((--j>=0) && (strcmp(current,mat_loc[j])<0)){
+            strcpy(mat_loc[j+1],mat_loc[j]);
+        }
+        strcpy(mat_loc[j+1],current);
+        free(current);
+    }
+    *mat=mat_loc;
+}
+
+void sort_strings2(char ***mat, int n){
+    // exchanging the pointers only
+    int i, j;
+    char *current;
+    for (i=1;i<n;i++){
+        current=malloc(sizeof((*mat)[i]));
+        strcpy(current,(*mat)[i]);
+        j=i;
+        while ((--j>=0) && (strcmp(current,(*mat)[j])<0)){
+            mat[j+1]=mat[j];
+        }
+        strcpy((*mat)[j+1],current);
+        free(current);
+    }
+}
+
+void write_strings(char **mat, int n, char *filename){
+    FILE *fp;
+    int i;
+    if ((fp=fopen(filename,"w"))==NULL){
+        fprintf(stderr,"File %s opening error",filename);
+        exit(1);
+    }
+    for (i=0;i<n;i++)
+        fprintf(fp,"%s\n",mat[i]);
+    fclose(fp);
+}
+
+void destroy_strings(char **mat, int n){
+    int i;
+    for (i=0;i<n;i++){
+        free(mat[i]);
+    }
+    free(mat);
+}

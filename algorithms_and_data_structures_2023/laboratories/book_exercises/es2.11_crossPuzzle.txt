@@ -1,0 +1,134 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#define MAX(R,C) ((R>C) ?R:C)
+#define DIRS 8
+
+char **malloc2d(int, int);
+void free2d(char **, int);
+int find_all(int, int, char *, char **, char **, int , int);
+void find(char *, char **, char **, int, int);
+void save(char *, char **, int, int);
+
+int main(int argc, char *argv[]){
+    char **matrixIn, **matrixOut;
+    char *word;
+    int i, j, R, C;
+    FILE *fp;
+    if (argc!=4){
+        fprintf(stderr,"Format error, run as: %s <matrixFile> <wordFile> <outputFile>",argv[0]);
+        return 1;
+    }
+    fp=fopen(argv[1],"r");
+    if (fp==NULL){
+        fprintf(stderr,"File opening error, name of the file: %s",argv[1]);
+        return 1;
+    }
+    fscanf(fp,"%d%d%*c",&R,&C);
+    matrixIn=malloc2d(R,C);
+    matrixOut=malloc2d(R,C);
+    for (i=0;i<R;i++){
+        for (j=0;j<C;j++){
+            matrixOut[i][j]=' ';
+        }
+    }
+    word=malloc((MAX(R,C)+1)*sizeof(char *));
+    if (word==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    for (i=0;i<R;i++){
+        for (j=0;j<C;j++){
+            fscanf(fp,"%c",&matrixIn[i][j]);
+        }
+        fscanf(fp,"%*c");
+    }
+    fclose(fp);
+    fp=fopen(argv[2],"r");
+    if (fp==NULL){
+        fprintf(stderr,"File opening error, name of the file: %s",argv[2]);
+        exit(1);
+    }
+    while (fscanf(fp,"%s",word )!=EOF){
+        find(word,matrixIn,matrixOut,R,C);
+    }
+    fclose(fp);
+    free(word);
+    save(argv[3],matrixOut,R,C);
+    free2d(matrixIn, R);
+    free2d(matrixOut, R);
+    return 0;
+}
+
+char **malloc2d(int r, int c){
+    char **matrix;
+    int i;
+    matrix=malloc(r * sizeof(char *));
+    if (matrix == NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    for (i=0;i<r;i++) {
+        matrix[i] = malloc(c * sizeof(char));
+        if (matrix[i] == NULL) {
+            fprintf(stderr, "Memory allocation error");
+            exit(1);
+        }
+    }
+    return matrix;
+}
+
+void find(char *word, char **matrixIn, char **matrixOut_add, int R, int C){
+    int i, j;
+    for (i=0;i<R;i++){
+        for (j=0;j<C;j++)
+            if (find_all(i,j,word,matrixIn,matrixOut_add,R,C))
+                return;
+    }
+}
+
+void free2d(char **matrix, int r){
+    int i;
+    for (i=0;i<r;i++){
+        free(matrix[i]);
+    }
+    free(matrix);
+}
+
+int find_all (int row, int col, char *word, char **mIn, char **mOut_add, int R, int C){
+    char flag;
+    int r, c, i, j;
+    int offset[2][DIRS]={{0,0,-1,-1,-1,1,1,1},{1,-1,0,1,-1,0,1,-1}};
+    for (i=0;i<DIRS;i++){
+        flag=1;
+        for (j=0;j<strlen(word) && flag; j++){
+            r=row+j*offset[0][i];
+            c=col+j*offset[1][i];
+            if (r<0 || r>=R || c<0 || c>=C || mIn[r][c]!=word[j])
+                flag=0;
+        }
+        if (flag==1){
+            for (j=0;j<strlen(word); j++){
+                mOut_add[row+j*offset[0][i]][col+j*offset[1][i]]=word[j];
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void save(char *filename, char **matrixOut, int R, int C){
+    int i, j;
+    FILE *fp;
+    fp=fopen(filename,"w");
+    if (fp==NULL){
+        fprintf(stderr,"File opening error, name of the file: %s",filename);
+        exit(1);
+    }
+    for (i=0;i<R;i++){
+        for (j=0;j<C;j++)
+            fprintf(fp,"%c",matrixOut[i][j]);
+        fprintf(fp,"\n");
+    }
+    fclose(fp);
+}

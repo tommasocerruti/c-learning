@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int seq_num(int n, int base, int pos, int *sol, int count);
+
+int main(void){
+    int base=7, n=3, *sol, count;
+    sol=malloc(n*sizeof(int));
+    count= seq_num(n,base,0,sol,0);
+    free(sol);
+    return count;
+}
+
+
+int seq_num(int n, int base, int pos, int *sol, int count){
+    int i;
+    if (pos>=n){
+        for (i=0;i<n;i++)
+            printf("%d",sol[i]);
+        printf("\n");
+        return count+1;
+    }
+    for (i=0;i<base;i++){
+        sol[pos]=i;
+        count=seq_num(n,base,pos+1,sol,count);
+    }
+    return count;
+}
+
+//this solution uses the multiplication principle, where each bit is a set, the number of possible values is the base, and values are ranging from 0 to base-1

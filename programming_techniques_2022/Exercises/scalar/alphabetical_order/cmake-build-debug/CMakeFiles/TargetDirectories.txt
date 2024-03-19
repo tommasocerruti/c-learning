@@ -1,0 +1,3 @@
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/alphabetical_order/cmake-build-debug/CMakeFiles/alphabetical_order.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/alphabetical_order/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/scalar_data/alphabetical_order/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,170 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAXROWSIZE 1000
+#define HEAD 0
+#define TAIL 0
+#define ORDER_OCC 0
+#define ORDER_WORD 1
+
+typedef struct node{
+    char *word;
+    int occ;
+    struct node *nextp;
+} node_t;
+
+node_t * update(node_t **, char *);
+//reading the text file into a list
+node_t * create(node_t *, char *);
+//creating a new node
+int wrdcmp(char *, char *);
+//checking if the words are equivalent
+void print(node_t *, char *);
+//printing the list of words with frequencies
+
+int main(int argc, char *argv[]){
+    node_t *head=NULL;
+    FILE *fp;
+    char word[MAXROWSIZE+1];
+    if (argc!=3){
+        fprintf(stderr,"Arguments error");
+        exit(1);
+    }
+    if (!(HEAD||TAIL||ORDER_WORD||ORDER_OCC)){
+        fprintf(stderr,"Choose one access method");
+        exit(1);
+    }
+    if ((HEAD+TAIL+ORDER_WORD+ORDER_OCC)!=1){
+        fprintf(stderr,"Choose only one access method");
+        exit(1);
+    }
+    if ((fp=fopen(argv[1],"r"))==NULL){
+        fprintf(stderr,"Opening file error");
+        exit(1);
+    }
+    while ((fscanf(fp,"%s",word))!=EOF){
+        head=update(&head,word);
+    }
+    fclose(fp);
+    print(head, argv[2]);
+    return 0;
+}
+
+node_t * update(node_t **head, char *word){
+    node_t *q=*head, *p, *prev_q;
+    if (q==NULL){//zero nodes
+            *head=create(p,word);;
+    }
+    else if (q->nextp==NULL){//one node
+        if (wrdcmp(q->word,word)==0)
+                q->occ++;
+        else{
+            p=create(p,word);
+#if(HEAD || ORDER_OCC)
+            p->nextp=q;
+            *head=p;
+#endif
+#if(TAIL)
+            q->nextp=p;
+#endif
+#if (ORDER_WORD)
+            if (wrdcmp((q->word),(p->word))>0){
+                p->nextp=q;
+                *head=p;
+            }
+            else
+                q->nextp=p;
+#endif
+        }
+    }
+    else{//multiple nodes
+        while ((q->nextp!=NULL) && (wrdcmp(q->word,word)!=0))
+            q=q->nextp;
+        if (wrdcmp(q->word,word)==0){
+            q->occ++;
+#if(ORDER_OCC)
+            if ((q->nextp!=NULL)&&(q->nextp->occ<q->occ)){
+                if (q==*head){
+                    prev_q=q->nextp;
+                    p=prev_q->nextp;
+                    prev_q->nextp=q;
+                    q->nextp=p;
+                    *head=prev_q;
+                }
+                else{
+                    prev_q=*head;
+                    while(prev_q->nextp!=q)
+                        prev_q=prev_q->nextp;
+                }
+                while ((q->nextp!=NULL)&&((q->occ)>(q->nextp->occ))){
+                    prev_q->nextp=q->nextp;
+                    q->nextp=prev_q->nextp->nextp;
+                    prev_q->nextp->nextp=q;
+                }
+            }
+#endif
+        }
+        else{
+            p=create(p,word);
+#if(HEAD || ORDER_OCC)
+            p->nextp=*head;
+            *head=p;
+#endif
+#if(TAIL)
+            q->nextp=p;
+#endif
+#if (ORDER_WORD)
+            q=*head;
+            if (wrdcmp(q->word,p->word)>0){//put on the head
+                p->nextp=q;
+                *head=p;
+            }
+            else{//put further than the head
+                while ((q->nextp!=NULL)&&(wrdcmp((p->word),(q->nextp->word))>0)){
+                    q=q->nextp;
+                }
+                prev_q=q;
+                prev_q->nextp=p;
+                p->nextp=q->nextp;
+            }
+#endif
+        }
+    }
+    return *head;
+}
+
+node_t * create(node_t *p, char *word){
+    p=malloc(sizeof(node_t));
+    if (p==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    p->nextp=NULL;
+    p->word=strdup(word);
+    p->occ=1;
+    return p;
+}
+
+void print(node_t *node, char *filename){
+    FILE *fp;
+    if ((fp=fopen(filename,"w"))==NULL){
+        fprintf(stderr,"Opening file error");
+        exit(1);
+    }
+    while (node->nextp!=NULL){
+        fprintf(fp,"%s %d\n",node->word,node->occ);
+        node=node->nextp;
+    }
+    fprintf(fp,"%s %d",node->word,node->occ);
+    fclose(fp);
+}
+
+int wrdcmp(char *s1, char *s2) {
+    char *us1 =s1,*us2=s2;
+    while (tolower(*us1) == tolower(*us2++))
+        if (*us1++ == '\0')
+            return (0);
+    return (tolower(*us1) - tolower(*--us2));
+}

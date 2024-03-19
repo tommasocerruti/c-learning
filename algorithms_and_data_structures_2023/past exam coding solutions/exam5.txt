@@ -1,0 +1,208 @@
+//SOLUTION1
+
+#include <stdio.h>
+#include <stdlib.h>
+
+//note: i=strlen(str) is included in the loop to include string terminator
+void duplicate_erase(char *str){
+	int i, j, n=0, flag;
+	for (i=0,i<=strlen(str);i++){
+		flag=0;
+		for (j=0;!flag && j<n;j++)
+			if(str[i]==str[j])
+				flag=1;
+		if (flag)
+			str[i]=str[i+1];
+		else
+			n++;
+	}
+	
+}
+
+//SOLUTION2
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define N 4
+
+void *util_malloc(int size);
+void levelByLevel_visit_r(struct node *root, list_t **arr, int l1, int l2, int l);
+node_t *create_node(int key);
+void print_r(list_t arr,int diff);
+
+/*The idea is to use an array of linked lists to store the keys,
+by implementing this data structure we don't need to know how many nodes there are at each level*/
+
+typedef struct list_s list_t;
+typedef struct node_s node_t;
+
+struct node_s{
+	node_t *next;
+	int key;
+};
+
+struct list_s{
+	int level;
+	node_t *next;
+};
+
+void levelByLevel_visit(struct node *root, int l1, int l2){
+	int diff=l2-l1,i=0;
+	list_t *arr;
+	arr=util_malloc(diff*sizeof(list_s));
+	for (i=0;i<diff;i++)
+		arr[i].level=i+l1;
+	levelByLevel_visit_r(root,&arr,l1,l2,l);
+	print_r(arr,diff);
+	//FREE MEMORY
+	return;
+}
+
+node_t *create_node(int key){
+	node_t *node;
+	node=malloc(sizeof(node_t);
+	if (vect==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(EXIT_FAILURE);
+	}
+	node->key=key;
+	return node;
+}
+
+void *util_malloc(int size){
+	void *vect;
+	vect=malloc(size);
+	if (vect==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(EXIT_FAILURE);
+	}
+	return vect;
+}
+
+void levelByLevel_visit_r(struct node *root, list_t **arr, int l1, int l2, int l){
+	if (l>l2)
+		return;
+	node_t *temp;
+	int i;
+	if (l>=l1 && l<=l2){//tail insertion
+		if (arr[l-l1]->next==NULL)
+			arr[l-l1]->next=create_node(root->key);
+		else{
+			temp=arr[l-l1]->next
+			while(temp!=NULL)
+				temp=temp->next;
+			temp->next=create_node(root->key);
+		}	
+	}
+	for (i=0;i<N;i++)
+		levelByLevel_visit_r(root,arr,l1,l2,l+1);
+	return;
+}
+
+void print_r(list_t arr,int diff){
+	node_t *temp;
+	for (i=0;i<diff;i++){
+		temp=arr[i];
+		while(temp->next!=NULL){
+			fprintf(stdout,"%d ",temp->key);
+			temp=temp->next;
+		}
+		fprintf(stdout,"\n");
+	}	
+}
+
+//MUCH EASIER IMPLEMENTATION IS TO ITERATEVELY CALL THE RECURSIVE FUNCTION
+
+
+//SOLUTION 3
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define N 10
+
+FILE *util_fopen(char *filename, char mode);
+void *util_malloc(int size);
+char **read_file(FILE *fpr, int *n);
+int acronym(char **arr_str, char *str, int pos, int count, FILE *fpw);
+//acronym uses the multiplication principle
+
+int main(int argc, char *argv[]){
+	FILE *fpr, *fpw;
+	int i,n,count;
+	char **arr_str, str[N+1];
+
+	//read the file
+	fpr=util_fopen(argv[1],'r');
+	arr_str=read_file(fpr,&n);
+	
+	//write to the file
+	fpw=util_fopen(argv[2],'w');
+	count=acronym(arr_str,str,0,0,fpw);
+
+	//free the memory and close the file
+	for (i=0;i<n;i++)
+		free(arr_str[i]);
+	free(arr_str);
+	fclose(fpr);
+	fclose(fpw);
+	return count;
+}
+
+FILE *util_fopen(char *filename, char mode){
+	FILE *fp;
+	fp=fopen(filename,mode);
+	if (fp==NULL){
+		fprintf(stderr,"File opening error!");
+		exit(EXIT_FAILURE);
+	}
+	return fp;
+}
+
+char **read_file(FILE *fpr, int *n){
+	char *str[N+1];
+	char **arr_str;			
+	int i=0;
+	fscanf(fpr,"%d",n);
+	arr_str=util_malloc((*n)*sizeof(char *));
+	while ((fscanf(fpr,"%s",str)!=EOF)&&(i<(*n)){
+		arr_str[i]=strdup(str);
+		if (arr_str[i]==NULL){
+			fprintf(stderr,"Memory allocation error");
+			exit(EXIT_FAILURE);
+		}
+		i++;
+	}
+	return arr_str;
+}
+
+void *util_malloc(int size){
+	void *vect;
+	vect=malloc(size);
+	if (vect==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(EXIT_FAILURE);
+	}
+	return vect;
+}
+
+int acronym(char **arr_str, char *str, int pos, int count, FILE *fpw){
+	int i;
+	if (pos>=N){
+		str[N]='\0';
+		fprintf(fpw,"Acronym %d: %s\n",++count,str);
+		return count;
+	}
+	for (i=0;i<strlen(arr_str[pos]);i++){
+		str[pos]=arr_str[pos][i];
+		count=acronym(arr_str,str,pos+1,count,fpw);
+	}
+	return count;
+}
+
+//check semicolomns
+//check function arguments and return value
+//check variable names
+//check spelling

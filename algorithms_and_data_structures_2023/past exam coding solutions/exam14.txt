@@ -1,0 +1,159 @@
+{}
+
+//SOLUTION 1
+
+void subMat_copy(int **m1, int r1, int c1, int **m2, int r2, int c2, int x, int y){
+
+	int i, j, flagr=0, flagc;
+
+	//(x,y) is assumed from the text to be already a valid point in m1 so no check on that	
+	
+	for (i=x;i<x+r2 && !flagr;i++){
+		
+		//if we exceed in the row we need to terminate the loop (structured way, using flagr)
+
+		if (i<r1){
+
+			flagc=0; //we need to reset flagc at every row iteration
+
+			for (j=y;j<y+c2 && !flagc;j++){
+
+				//if we exceed in the columns we need to terminate the inner loop (flagc)
+				
+				if (j<c1){
+					m1[i][j]=m2[i-x][j-y];
+				}
+				else
+					flagc=1;
+			}
+		}
+		else
+			flagr=1;
+	
+	}
+	return;
+}
+
+
+//SOLUTION 2
+
+typedef struct node_s node_t;
+
+struct node_s{
+	char key;
+	int num;
+	node_t *l, *r, *p;
+}
+
+//l: left child, r: right sibling, p: parent
+
+//visiting the tree in-order
+// in the argument of the function there are:
+// - node_t *node referencing the node we are visiting
+// - node_t *p referencing the parent of node
+// - int *num referencing the number of children of node
+
+//note: the function should be initialized in a wrapper like:
+// int num=0; tree_complete(root,NULL,&num);
+// since the root has no parent by definition
+
+void tree_complete(node_t *node, node_t *p, int *num){
+
+	if (root==NULL) //termination condition
+		return;
+
+	tree_complete(node->l,node,num); //recur on the left
+
+	node->num=(*num); //every child has incremented num
+
+	(*num)=0; //reset num for the next nodes
+
+	node->p=p; //link the child to the parent
+
+	tree_complete(node->r,node,num); //recur on the sibilings
+
+	(*num)++; //increment num
+
+	return;	
+}
+
+//assuming we can change the return value
+
+int tree_complete(node_t *node, node_t *parent){
+	if (node==NULL)
+		return 0;
+	node->p=parent;
+	node->num=tree_complete(node->l,node);
+	return (1+tree_complete(node->r,parent));
+}
+
+//{}
+
+
+//SOLUTION 3
+
+/* IDEA:
+We can solve this both using simple combinations or simple permutations.
+My procedure will use simple permutations,i.e.
+find an ordering of the set such that we can partition the set in two subsets (minimum size k)
+satisfying the conditions imposed by the matrix (executed by a check function at termination condition)
+*/
+
+int check(int **m, int *sol, int n, int k);
+
+int perm(int **m, int *sol, int *mark, int n, int k, int pos){
+	int i;
+	if (pos>=k){
+		if(check(m,sol,n,k))
+			return 1;
+	}
+	for (i=0;i<n;i++){
+		if (mark[i]==0){
+			mark[i]=1;
+			sol[pos]=i;
+			if(perm(m,sol,mark,n,k,pos+1)
+				return 1;
+			mark[i]=0;
+		}
+	}
+	return 0;
+}
+
+int check(int **m, int *sol, int n, int k){
+	int sz,i,j,s,pres;
+	for (sz=k-1;sz<n-k;sz++){//choosing the size of the subsets (minimum k)
+
+		flag=0;//this flag helps us exit the inner loops if just one condition is not satisifed
+
+		for (i=0;i<n && !flag;i++){
+			for (j=0;j<n && !flag;j++){
+				pres=0;
+				if (m[i][j]==1){
+					//i and j need to be together:
+					//if pres=1 it means that they are separated --> exit
+					'for (s=0;s<sz;s++)
+						if(sol[s]==i||sol[s]==j)
+							pres++;
+				}
+				if (pres==1)
+					flag=1;
+			}
+		}
+		if(!flag){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/* SOME OBSERVATIONS ON THE CODE:
+The code is easily changeable up to user's needs whether he wants one or all solutions.
+This code (following the instructions guidelines) just returns the first.
+By omitting the if condition including the recursive call, so just calling the function,
+we would see a solution (and possibly count them) for every possible valid permutation.
+However, each permutation might have more than one solution, hence we would need to modify also
+the check function in such a way that it counts the solution instead of returning at the first.
+*/
+
+//note: the best appraoch is to compute the powerset using simple combinations
+

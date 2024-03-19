@@ -1,0 +1,60 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
+void graycode(int n, int l, int **mat);
+
+int main(void){
+    int n, **mat, i, j;
+    scanf("%d",&n);
+    mat=malloc(pow(2,n)*sizeof(int *));
+    if (mat==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    for (i=0;i<pow(2,n);i++){
+        mat[i]=malloc(n*sizeof(int));
+        if (mat[i]==NULL){
+            fprintf(stderr,"Memory allocation error");
+            exit(1);
+        }
+    }
+    graycode(n,1,mat);
+    for (i=0;i<pow(2,n);i++){
+        for (j=0;j<n;j++){
+            fprintf(stdout,"%d",mat[i][j]);
+        }
+        fprintf(stdout,"\n");
+    }
+    for (i=0;i<pow(2,n);i++){
+        free(mat[i]);
+    }
+    free(mat);
+    return EXIT_SUCCESS;
+}
+
+void graycode(int n, int l, int **mat){
+    int i,j,m;
+    if (l>n)
+        return;
+    if (l==1){
+        mat[0][n-1]=0;
+        mat[1][n-1]=1;
+    }
+    else{
+        m=pow(2,l-1);
+        for (i=0;i<m;i++){
+            for (j=0;j<l-1;j++){
+                mat[m+i][n-1-j]=mat[m-1-i][n-1-j];
+            }
+        }
+        for (i=0;i<m;i++){
+            mat[i][n-l]=0;
+        }
+        for (i=m;i<2*m;i++){
+            mat[i][n-l]=1;
+        }
+    }
+    graycode(n,l+1,mat);
+    return;
+}

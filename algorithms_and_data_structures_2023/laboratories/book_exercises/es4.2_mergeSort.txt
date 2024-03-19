@@ -1,0 +1,68 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+int *array_read(int *dim);
+void merge_sort_r(int *v, int p, int r, int *aux);
+void merge(int *v, int p, int q, int r, int *aux);
+void array_write(int *arr, int dim);
+
+int main(void){
+    int n, *arr, *aux;
+    arr=array_read(&n);
+    aux=malloc(n*sizeof(int));
+    if (aux==NULL)
+        exit(1);
+    merge_sort_r(arr,0,n-1,aux);
+    array_write(arr,n);
+    free(arr);
+    free(aux);
+    return EXIT_SUCCESS;
+}
+
+int *array_read(int *dim){
+    int i, *arr;
+    fprintf(stdout,"Input size:");
+    fscanf(stdin,"%d",dim);
+    arr=malloc((*dim)*sizeof(int));
+    if (arr==NULL)
+        exit(1);
+    fprintf(stdout,"Initial array:\n");
+    for (i=0;i<*dim;i++){
+        fscanf(stdin,"%d",&arr[i]);
+        fprintf(stdout,"v[%d]=%d\n",i,arr[i]);
+    }
+    return arr;
+}
+void merge_sort_r(int *v, int p, int r, int *aux){
+    int q;
+    if (p<r){
+        q=(p+r)/2;
+        merge_sort_r(v,p,q,aux);
+        merge_sort_r(v,q+1,r,aux);
+        merge(v,p,q,r,aux);
+    }
+    return;
+}
+
+void merge(int *v, int p, int q, int r, int *aux){
+    int i, j, k;
+    for (i=p, j=q+1, k=p; i<=q && j<=r; ){
+        if (v[i]<v[j])
+            aux[k++]=v[i++];
+        else
+            aux[k++]=v[j++];
+    }
+    while (i<=q)
+        aux[k++]=v[i++];
+    while (j<=r)
+        aux[k++]=v[j++];
+    for (k=p;k<=r;k++)
+        v[k]=aux[k];
+}
+
+void array_write(int *arr, int dim){
+    int i;
+    fprintf(stdout,"Sorted array:\n");
+    for (i=0;i<dim;i++)
+        fprintf(stdout, "arr[%d]=%d\n", i, arr[i]);
+}

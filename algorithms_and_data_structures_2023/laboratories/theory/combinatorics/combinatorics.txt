@@ -1,0 +1,9 @@
+There are seven different functions to generate these samples of subsets:
+1- Multiplication principle --> multiple sets (choose one of each)
+2- Simple arrangements --> ordered subset with no rep
+3- Arrangements with repetitions --> ordered substet with rep
+4- Simple permutations --> reordering the set (ordered set without rep)
+5- Permutations with repetitions --> reodering the set with repeting el. (ordered set with rep)
+6- Simple combinations --> unordered subset without rep
+7- Combinations with repetitions --> unordered subset with rep
+(Note: there is no unordered set because it would be the set itself)

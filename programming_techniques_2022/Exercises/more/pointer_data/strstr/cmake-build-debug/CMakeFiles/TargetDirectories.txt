@@ -1,0 +1,3 @@
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/more/pointer_data/strstr/cmake-build-debug/CMakeFiles/strstr.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/more/pointer_data/strstr/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/tomma/OneDrive/Desktop/course_PROGRAMMING.TECHNIQUES/Exercises/more/pointer_data/strstr/cmake-build-debug/CMakeFiles/rebuild_cache.dir

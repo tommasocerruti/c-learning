@@ -1,0 +1,63 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+char **read_mat(char *, int *);
+void patterns(char **, char *, int, int, FILE *);
+
+int main(int argc, char *argv[]){
+    char *arr, **mat;
+    int n, i;
+    FILE *fp;
+    mat=read_mat(argv[1],&n);
+    arr=malloc((n+1)*sizeof(char));
+    if (arr==NULL)
+        exit(EXIT_FAILURE);
+    arr[n+1]='\n';
+    fp=fopen(argv[2],"w");
+    if (fp==NULL)
+        exit(EXIT_FAILURE+1);
+    patterns(mat,arr,n,0,fp);
+    fclose(fp);
+    for (i=0;i<n;i++)
+        free(mat[i]);
+    free(mat);
+    free(arr);
+    return EXIT_SUCCESS;
+}
+
+char **read_mat(char *filename, int *n){
+    int c=0, i;
+    char line[10];
+    char **mat;
+    FILE *fp=fopen(filename,"r");
+    if (fp==NULL)
+        exit(EXIT_FAILURE+2);
+    while (fscanf(fp,"%s",line)!=EOF)
+        c++;
+    for (i=0;i<c;i++){
+        mat[i]=malloc(c*sizeof(char *));
+        if (mat[i]==NULL)
+            exit(EXIT_FAILURE+3);
+    }
+    rewind(fp);
+    i=0;
+    while (fscanf(fp,"%s",line)!=EOF)
+        mat[i++]=strdup(line);
+    *n=c;
+    fclose(fp);
+    return mat;
+}
+
+void patterns(char **mat, char *arr, int n, int row, FILE *fp){
+    int i;
+    if (row>=n){
+        fprintf(fp,"%s\n",arr);
+        return;
+    }
+    for (i=0;i<strlen(mat[row]);i++){
+        arr[row]=mat[row][i];
+        patterns(mat,arr,n,row+1,fp);
+    }
+    return;
+}

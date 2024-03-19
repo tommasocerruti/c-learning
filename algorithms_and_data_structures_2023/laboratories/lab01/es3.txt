@@ -1,0 +1,137 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define MAXC 41
+#define MAXN 31
+
+typedef struct{
+    char *name;
+    int id, num_laps;
+    float *time_laps, avg;
+} athlete_t;
+
+void read_file(char *, athlete_t **, int *);
+int cmd_str_to_int(char []);
+void commands(int *, athlete_t *, char [], int);
+void destroy (athlete_t **, int);
+
+int main(int argc, char *argv[]){
+    int sel=1, num;
+    char command[MAXC];
+    athlete_t *athletes;
+    read_file(argv[1],&athletes,&num);
+    while (sel){
+        fprintf(stdout,"Command?");
+        fgets(command,MAXC,stdin);
+        commands(&sel, athletes, command,num);
+    }
+    destroy(&athletes,num);
+    return EXIT_SUCCESS;
+}
+
+void read_file(char *filename, athlete_t **athletes, int *num){
+    FILE *fp;
+    int i=0,id,numl,j;
+    float tot,time;
+    char name[MAXN];
+    if ((fp=fopen(filename,"r"))==NULL){
+        fprintf(stderr,"File opening error");
+        exit(1);
+    }
+    fscanf(fp,"%d",num);
+    (*athletes)=malloc((*num)*sizeof(athlete_t));
+    if ((*athletes)==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    while (fscanf(fp,"%s %d %d",name,&id,&numl)!=EOF){ //doubt on what to replace id with
+        (*athletes)[i].name=strdup(name);
+        (*athletes)[i].time_laps=malloc(numl*sizeof(float));
+        if (((*athletes)[i].time_laps)==NULL){
+            fprintf(stderr,"Memory allocation error");
+            exit(1);
+        }
+        (*athletes)[i].id=id;
+        (*athletes)[i].num_laps=numl;
+        tot=0;
+        for (j=0;j<numl;j++){
+            fscanf(fp,"%f",&time);
+            (*athletes)[i].time_laps[j]=time;
+            tot+=time;
+        }
+        (*athletes)[i].avg=tot/((float) numl);
+        i++;
+    }
+    fclose(fp);
+}
+
+int cmd_str_to_int(char cmd[]){
+    int i;
+    char cmds[4][MAXC]={"list","detail","best","stop"};
+    for (i=0;i<4;i++){
+        if (strncmp(cmd,cmds[i],strlen(cmds[i])-1)==0)
+            return i;
+    }
+    return i+1;
+}
+
+void commands(int *sel, athlete_t *athletes, char commands[], int num){
+    int i,j;
+    float min;
+    char name[MAXN];
+    char *det_name;
+    switch(cmd_str_to_int(commands)){
+        case 0: //list
+            fprintf(stdout,"Number of athletes:%d\n",num);
+            for (i=0;i<num;i++)
+                fprintf(stdout,"Name:%s #Id:%d #Laps:%d\n",athletes[i].name,athletes[i].id,athletes[i].num_laps);
+            break;
+        case 1: //details
+            det_name=commands+strlen("details");
+            for (i=0;i<=num;i++){
+                if ((i<num)&&(strncmp(det_name,athletes[i].name,strlen(athletes[i].name)-1)==0))
+                    break;
+            }
+            if (i==num)
+                fprintf(stdout,"%s not found",det_name);
+            else{
+                fprintf(stdout,"#Id:%d #Laps:%d Times:",athletes[i].id,athletes[i].num_laps);
+                for (j=0;j<athletes[i].num_laps;j++)
+                    fprintf(stdout," %.2f",athletes[i].time_laps[j]);
+                fprintf(stdout,"\n");
+            }
+            break;
+        case 2: //best
+            j=0;
+            min=athletes[j].avg;
+            for (i=1;i<num;i++){
+                if (min>athletes[i].avg){
+                    min=athletes[i].avg;
+                    j=i;
+                }
+            }
+            strcpy(name,athletes[j].name);
+            fprintf(stdout,"Name:%s #Id:%d #Laps:%d Times:",athletes[j].name,athletes[j].id,athletes[j].num_laps);
+            for (i=0;i<athletes[j].num_laps;i++)
+                fprintf(stdout," %.2f",athletes[j].time_laps[i]);
+            fprintf(stdout," (Average:%.2f)\n",athletes[j].avg);
+            break;
+        case 3: //stop
+            (*sel)=0;
+            fprintf(stdout,"Program ended");
+            break;
+        default: //wrong
+            fprintf(stderr,"Wrong input");
+            break;
+    }
+}
+
+void destroy (athlete_t **athletes, int n){
+    int i;
+    for (i=0;i<n;i++){
+        free((*athletes)[i].name);
+        free((*athletes)[i].time_laps);
+    }
+    free(*athletes);
+}

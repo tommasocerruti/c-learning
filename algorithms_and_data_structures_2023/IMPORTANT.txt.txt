@@ -1,0 +1,1 @@
+Never delete any file containg Cmake because it will trigger compilation errors

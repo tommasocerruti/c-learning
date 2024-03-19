@@ -1,0 +1,86 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define MAXL 100
+
+typedef struct{
+    char *str;
+} string;
+
+void read_strings(string **, int *, char *);
+void sort_strings(string **, int);
+void write_strings(string *, int, char *);
+void destroy_strings(string *, int);
+
+int main(int argc, char *argv[]){
+    int n;
+    string *strings;
+    read_strings(&strings, &n, argv[1]);
+    sort_strings(&strings, n);
+    write_strings(strings, n, argv[2]);
+    destroy_strings(strings, n);
+    return 0;
+};
+
+void read_strings(string **strings, int *n, char *filename){
+    FILE *fp;
+    int i;
+    char word[MAXL+1];
+    string *strings_loc;
+    if ((fp=fopen(filename,"r"))==NULL){
+        fprintf(stderr,"File %s opening error",filename);
+        exit(1);
+    }
+    fscanf(fp,"%d",n);
+    strings_loc=malloc((*n)*sizeof(string));
+    if (strings_loc==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    for (i=0;i<(*n);i++){
+        fscanf(fp,"%s",word);
+        strings_loc[i].str=strdup(word);
+        if (strings_loc[i].str==NULL){
+            fprintf(stderr,"Memory allocation error");
+            exit(1);
+        }
+    }
+    fclose(fp);
+    (*strings)=strings_loc;
+}
+
+void sort_strings(string **strings, int n){
+    int i, j;
+    string *strings_loc, current;
+    strings_loc=*strings;
+    for (i=1;i<n;i++){
+        current=strings_loc[i];
+        j=i;
+        while ((--j>=0) && (strcmp(current.str,strings_loc[j].str)<0)){
+            strings_loc[j+1]=strings_loc[j];
+        }
+        strings_loc[j+1]=current;
+    }
+    *strings=strings_loc;
+}
+
+void write_strings(string *strings, int n, char *filename){
+    FILE *fp;
+    int i;
+    if ((fp=fopen(filename,"w"))==NULL){
+        fprintf(stderr,"File %s opening error",filename);
+        exit(1);
+    }
+    for (i=0;i<n;i++)
+        fprintf(fp,"%s\n",strings[i].str);
+    fclose(fp);
+}
+
+void destroy_strings(string *strings, int n){
+    int i;
+    for (i=0;i<n;i++){
+        free((strings)[i].str);
+    }
+    free(strings);
+}

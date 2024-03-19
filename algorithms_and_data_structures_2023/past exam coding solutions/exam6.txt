@@ -1,0 +1,211 @@
+//SOLUTION 1
+void sequence_invert(int *v1, int n, int *v2){
+	int i=-1, j, z=-1, idx, len=0, val;
+	while((++i)<n){
+		if (len==0){//start
+			len=1;
+			idx=i;
+			val=v1[i];
+		}
+		else{//compare the element withthe previous
+			if (v1[i]>val){//if greater, go on and increment
+				val=v1[i];
+				len++;
+			}
+			else{//is smaller, store into v2 and start again froom v1[i]
+				for (j=idx+len-1;j>=idx;j--)
+					v2[++z]=v1[j];
+				len=1;
+				idx=i;
+				val=v1[i];
+			}
+		}
+	}
+	//the code is exited that at least one element is to be stored (if non empty array, but even if empty it's not a problem)
+	for (j=idx;j<idx+len;j++)
+		v2[++z]=v1[j];
+	return;
+}
+
+//SOLUTION 2
+#include <stdio.h>
+#include <stdlib.h>
+#define PRE -1
+#define IN 0
+#define POST 1
+
+void path_write(struct node *root, int height, int level, int mode){
+	if (mode==PRE){
+		if (level>height || root==NULL)
+			return;
+		printf("%d",root->key);
+		path_write(root->left,height,level+1,mode);
+		path_write(root->right,height,level+1,mode);
+		return;
+	}
+	else if (mode==IN){
+		if (level>height || root==NULL)
+			return;
+		path_write(root->left,height,level+1,mode);
+		printf("%d",root->key);
+		path_write(root->right,height,level+1,mode);
+		return;
+	}
+	else if (mode==POST){
+		if (level>height || root==NULL)
+			return;
+		path_write(root->left,height,level+1,mode);
+		path_write(root->right,height,level+1,mode);
+		printf("%d",root->key);
+		return;
+	}
+	else{
+		fprintf(stderr,"Wrong visit mode");
+		exit(EXIT_FAILURE);
+	} 
+}
+
+//SOLUTION 3
+{}
+/* IDEA: Implement multiplication principle taking care of the reps allowed*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#define N 5
+#define ALPHA 26
+#define DIG 10
+
+typedef struct val_s{
+	int num_choices,
+	char *choices;
+	int *reps;
+}val_t;
+
+/* DATA STRUCTURE: Struct with:
+- int num_choices, integer indicating the number of possible choices (for letters 26, digits 10)
+- char *choices, array (dynamically allocated of size num_choices) of characters containing the possible choices(for letters A,B,... for digits 0,1,...)
+- int *reps, array (dynamically allocated of size num_choices) of integers initialized to zero,
+in this way reps[i] stores how many times choices[i] has been used and consequently how many more times it can be used based on the input integer value num_choices
+(it is more simple to initialize it to zero with calloc then to initialize it with calloc and then having to increment each term to num_choices)  */
+
+void util_malloc(int size);
+void util_calloc(int size);
+int password_r(char password[],val_t vals[], int n, int reps_allowed,int count, int level);
+
+//wrapper initializing and allocating the memory needed
+int password_wrap(int reps_all){
+	int i,j;
+	char password[N+1];
+	val_t vals[N+1];
+	for (i=0;i<N;i++){
+		if (i<3){//LETTERS
+			val_s.num_choices=ALPHA;
+			val_s.choices=util_malloc(ALPHA*sizeof(char));
+			for (j=0;j<ALPHA;j++)
+				vals.choices='A'-j;
+			val_s.reps=util_calloc(ALPHA*sizeof(int));
+		}
+		else {//DIGITS
+			val_s.num_choices=DIG;
+			val_s.choices=util_malloc(DIG*sizeof(char));
+			for (j=0;j<ALPHA;j++)
+				vals.choices='0'-j;
+			val_s.reps=util_calloc(DIG*sizeof(int));
+		}
+	}
+	//tail recursion to return the number of solutions, the printing is done by the recursive function
+	return password_r(password,vals,N,reps_allowed,0,0);
+}
+
+void *util_malloc(int size){
+	void *arr;
+	arr=malloc(size);
+	if (arr==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	return arr;
+}
+
+void *util_calloc(int size){
+	void *arr;
+	arr=calloc(size);
+	if (arr==NULL){
+		fprintf(stderr,"Memory allocation error");
+		exit(1);
+	}
+	return arr;
+}
+
+int password_r(char password[],val_t vals[], int n, int reps_allowed,int count, int level){
+	int i;
+	if (level>=n){
+		fprintf(stdout,"Solution %d: ",++count);
+		for (i=0;i<n;i++){
+			fprintf(stdout,"%c",password[i])
+		}
+		fprintf(stdout,"\n");
+		return count;
+	}
+	for (i=0;i<vals[pos].numchoices;i++){
+		if (vals[pos].reps[i]<reps_allowed){
+			vals[pos].reps[i]++;
+			password[pos]=vals[pos].choices[i];
+			count=password_r(password,vals,n,reps_allowed,count,level+1);
+			vals[pos].reps[i]--;
+		}
+	}
+	return count;
+}
+
+
+//CORRECTION EX2
+//the quest is misunderstood, you need to write the path per each node
+void path_write_r(struct node *root, int height, int level, struct node **vet){
+	int i;
+	if (node==NULL){
+		for (i=0;i<level;i++)
+			fprintf(stdout,"%d",vet[i]->key);
+		fprintf(stdout,"\n");
+		return;
+	}
+	vet[level]=root;
+	path_write(root->right,height,level+1,vet);
+	path_write(root->left,height,level+1,vet);
+	return;
+}
+
+//CORRECTION EX3
+//the exercise can be done in a much shorter way
+#define L1 3
+#define L2 5
+void password(char *pass, int level, int *letter, int *digit, int n){
+	static int count=0;
+	int i;
+	if (level>=L2){//print
+		for (i=0;i<L2;i++)
+			fprintf(stdout,"%c",pass[i]);
+		fprintf(stdout,"\n");
+	}
+	if (level<L1){//alpha
+		for (i=0;i<26;i++){
+			if (letter[i]<n){
+				letter[i]++;
+				pass[level]=(char)(((int)'a')+i);
+				password(pass,level+1,letter,digit,n);
+				letter[i]--;
+			}
+		}
+	}
+	else{//digit
+		for (i=0;i<10;i++){
+			if (letter[i]<n){
+				letter[i]++;
+				pass[level]=(char)(0+i);
+				password(pass,level+1,letter,digit,n);
+				letter[i]--;
+			}
+		}
+	}
+	return;
+}

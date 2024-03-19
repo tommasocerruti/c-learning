@@ -1,0 +1,88 @@
+
+//EXERCISE 1
+
+void frame_sum(int **mat, int n, int **vet){
+	int *v, num;
+	num=(n+1)/2;
+	v=calloc(num,sizeof(int));
+	if (v==NULL)
+		return;
+	int i,j,f;
+
+	for (f=0;f<num;f++){
+		for (i=f;i<num;i++){
+			for (j=f;j<num;j++){
+				if (i==f || i==n-f-1 || j==f || j==n-f-1)
+					v[f]+=mat[i][j];
+			}
+		}
+	}
+	(*vet)=v;
+}
+
+ 
+//EXERCISE 2 {}
+
+typedef struct node node_t;
+
+struct node{
+	int key;
+	node_t *l, *r;
+}
+
+void tree_mirror(node_t *node, node_t **mir);
+node_t *createnode(int key);
+
+
+node_t *tree_mirror(node_t *root){
+	node_t *mirrored=NULL;
+	tree_mirror_r(root,&mirrored);
+	return mirrored;
+}
+
+node_t *createnode(int key){
+	node_t *node;
+	node=malloc(sizeof(node_t));
+	if (node==NULL)
+		exit(1);
+	node->key=key;
+	node->l=NULL;
+	node->r=NULL;
+	return node;
+}
+
+void tree_mirror_r(node_t *node, node_t **mir){
+	if (node==NULL)
+		return;
+	(*mir)=createnode(int key);
+	tree_mirror(node->left,&mir->right);
+	tree_mirror(node->right,&mir->left);
+	return;
+}
+
+//EXERCISE 3
+
+/*IDEA:
+- Using the same command twice does not make sense because you would return to the previous state (NO REPETITIONS)
+- The order in which you use the commands does not affect the final result (NO ORDER)
+--> Simple combinations
+- Given a matrix nxn we have 2n options to choose from: n rows options and n colomuns options
+- Hence we want to find the minimum subset belonging to the powerset of the options
+- we enumerate the choices from 0 to 2n-1 where the choices from 0 to n-1 affect the rows and from n to 2n-1 the columns
+*/
+
+//iterating on k from 1 to N (N=2n)
+
+//note: to flip we just use the increment/module method
+
+int matrix_swap(int *val, int *sol, int N, int k, int start, int pos){
+	int i;
+	if (pos>=k){//check}
+	for (i=start;i<N;i++){
+		sol[pos]=i;
+		if (matrix_swap(val,sol,N,k,i+1,pos+1))
+			return 1;
+	}
+	return 0;
+}
+

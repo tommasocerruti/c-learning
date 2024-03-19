@@ -1,0 +1,71 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define IDL 16
+#define NAMEL 50
+#define DATEL 10
+
+typedef struct node_s node_t;
+
+struct node_s{
+    char *name, id[IDL+1], date[DATEL+1];
+    int sal;
+    node_t *prev, *succ;
+};
+
+node_t *read_and_headinsert(char *filename);
+void print(node_t *nodes, char *name, char *sequence);
+
+int main(int argc, char *argv[]){
+    node_t *head;
+    head=read_and_headinsert(argv[1]);
+    print(head,argv[2],argv[3]);
+    while (head->succ!=NULL){
+        head=head->succ;
+        free(head->prev->name); free(head->prev);
+    }
+    free(head->name); free(head);
+    return 0;
+}
+
+node_t *read_and_headinsert(char *filename){
+    FILE *fp=fopen(filename,'r');
+    if (fp==NULL)
+        exit(1);
+    node_t *head, *node, *tmp;
+    int sal;
+    char name[NAMEL+1], id[IDL+1], date[DATEL+1];
+    while (fscanf(fp,"%s %s %s %d",name,id,date,&sal)){
+        node=malloc(sizeof(node_t));
+        if (node==NULL)
+            exit(1);
+        node->name=strdup(name); strcpy(node->id,id);
+        strcpy(node->date,date); node->sal=sal;
+        node->prev=NULL; node->succ=NULL;
+        if (head==NULL)
+            head=node;
+        else {
+            node->succ=head;
+            head->prev=node;
+            head=node;
+        }
+    }
+    fclose(fp);
+    return head;
+}
+
+void print(node_t *head, char *name, char *sequence){
+    while ((head!=NULL)&&(strcmp(name,head->name)==0))
+        head=head->succ;
+    if (head==NULL)
+        exit(1);
+    int i=-1;
+    while (sequence[++i]!='\0'){
+        if ((sequence[i]=='+')&&(head->succ!=NULL))
+            head=head->succ;
+        else if ((sequence[i]=='-')&&(head->prev!=NULL))
+            head=head->prev;
+        printf("%s %s %s %d\n",head->name,head->id,head->date,head->sal);
+    }
+}

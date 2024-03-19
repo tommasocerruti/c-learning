@@ -1,0 +1,20 @@
+const int offsetX[8]={2,2,-2,-2,1,1,-1,-1};
+const int offsetY[8]={1,-1,-1,1,2,-2,2,-2};
+
+int move_r(int x, int y, int pos, int board[N][N]){
+    int n, i, j;
+    if (pos>(N*N)){//termination condition
+        return 1;
+    }
+    for (n=0;n<8;n++){
+        j=x+offsetX[n];
+        i=y+offsetY[n];
+        if ((i>=0)&&(i<N)&&(j>=0)&&(j<N)&&(board[i][j]==0)){
+            board[i][j]=pos;
+            if (move_r(i,j,pos+1,board))
+                return 1;
+            board[i][j]=0;
+        }
+    }
+    return 0;
+}

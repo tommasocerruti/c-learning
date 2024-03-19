@@ -1,0 +1,96 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define MAXW 51
+#define SZID 17
+#define SZDA 11
+
+typedef struct employee{
+    char *name;
+    char id[SZID];
+    char date[SZDA];
+    int salary;
+    struct employee *nextp;
+    struct employee *prev;
+}employee_t;
+
+employee_t *create(employee_t *);
+employee_t *readfile(char*);
+void printelements(employee_t *, char*, char*);
+
+int main(int argc, char *argv[]){
+    employee_t *employees;
+    employees=readfile(argv[1]);
+    printelements(employees,argv[2],argv[3]);
+    return 0;
+}
+//{}
+
+employee_t *create(employee_t *emp){
+    emp=malloc(sizeof(employee_t));
+    if (emp==NULL){
+        fprintf(stderr,"Memory allocation error");
+        exit(1);
+    }
+    return emp;
+}
+
+employee_t *readfile(char* filename){
+    FILE *fp;
+    employee_t *head, *p;
+    char name[MAXW], id[SZID], date[SZDA];
+    int sal;
+    int flag=1;
+    if ((fp=fopen(filename,"r"))==NULL){
+        fprintf(stderr,"File opening error");
+        exit(1);
+    }
+    while (fscanf(fp, "%s %s %s %d", name, id, date, &sal)!=EOF){
+        p=create(p);
+        if (!flag){
+            head->prev=p;
+            p->nextp=head;
+        }
+        if (flag){
+            p->nextp=NULL;
+            flag=0;
+        }
+        p->name=strdup(name);
+        if (p->name==NULL){
+            fprintf(stderr,"Memory allocation error");
+            exit(1);
+        }
+        strcpy(p->id,id);
+        strcpy(p->date,date);
+        p->salary=sal;
+        head=p;
+    }
+    head->prev=NULL;
+    return head;
+}
+
+void printelements(employee_t *head, char *name, char *seq){
+    int i;
+    employee_t *p=head;
+    while (strcmp(p->name,name)!=0)
+        p=p->nextp;
+    if (strcmp(p->name,name)!=0){
+        fprintf(stderr,"Name not found");
+        exit(1);
+    }
+    fprintf(stdout,"%s %s %s %d\n",p->name,p->id,p->date,p->salary);
+    for (i=0;i<strlen(seq);i++){
+        if ((seq[i]=='+')&&(p->nextp!=NULL)){
+            p=p->nextp;
+            fprintf(stdout,"%s %s %s %d\n",p->name,p->id,p->date,p->salary);
+        }
+        else if ((seq[i]=='-')&&(p->prev!=NULL)){
+            p=p->prev;
+            fprintf(stdout,"%s %s %s %d\n",p->name,p->id,p->date,p->salary);
+        }
+        else {
+            fprintf(stdout,"%s %s %s %d\n",p->name,p->id,p->date,p->salary);
+        }
+    }
+}

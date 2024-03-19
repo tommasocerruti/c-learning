@@ -1,0 +1,9 @@
+it001 500 15131
+ge002 CClass 75641
+it001 Panda 12001
+ge002 AClass 22411
+it001 Punto 17891
+ja001 Model4 12343
+ja001 Model5 54245
+it002 Alfa7 13414
+ge001 Class3 52452

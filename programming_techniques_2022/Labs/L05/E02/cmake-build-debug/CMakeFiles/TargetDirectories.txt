@@ -1,0 +1,3 @@
+C:/Users/tomma/OneDrive/Desktop/Courses/xtra/Z - Previous year relevant/Programming Techniques/Labs/L05/E02/cmake-build-debug/CMakeFiles/E02.dir
+C:/Users/tomma/OneDrive/Desktop/Courses/xtra/Z - Previous year relevant/Programming Techniques/Labs/L05/E02/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/tomma/OneDrive/Desktop/Courses/xtra/Z - Previous year relevant/Programming Techniques/Labs/L05/E02/cmake-build-debug/CMakeFiles/rebuild_cache.dir

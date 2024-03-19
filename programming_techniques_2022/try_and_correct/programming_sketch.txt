@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <string.h>
+#define MAX 30
+
+int main(void){
+	char firstName[MAX], lastName[MAX], empID[8];
+	int zipCode, error=0, i, emperr=0;
+	printf("Enter the first name:"); scanf("%s",firstName);
+	printf("Enter the last name:"); scanf("%s",lastName);
+	printf("Enter the ZIP code:"); scanf("%s",empID);
+	printf("Enter an employee ID:"); scanf("%d",&zipCode);
+	if (strlen(firstName)==0){
+		printf("The first name must be filled in");
+		error=1;
+	}	
+	else if (strlen(firstName)<2){
+		printf("%s is not a valid first name. It is too short.",firstName);
+		error=1;
+	}
+	if (strlen(lastName)==0){
+		printf("The last name must be filled in");
+		error=1;
+	}
+		
+	else if (strlen(lastName)<2){
+		printf("%s is not a valid last name. It is too short.",lastName);
+		error=1;
+	}
+	if (isnum(zipCode)==0){
+		printf("The ZIP code must be numeric");
+		error=1;
+	}
+	if ((isalpha(empID[0]) && isalpha(empID[1]))==0)
+		emperr=1;
+	if (empID[2]!='-')
+		emperr=1;
+	if ((isnum(empID[3]) && isnum(empID[4]) && isnum(empID[5]) && isnum(empID[6]))==0)
+		emperr=1;
+	if (strlen(empId)!=7)
+		emperr=1;
+	if (emperr){
+		printf("%s is not a valid ID",empID);
+		error=1;
+	}
+	if (error==0)
+		printf("There were no errors found");
+	return 0;
+}

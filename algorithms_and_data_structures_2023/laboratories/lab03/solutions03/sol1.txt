@@ -1,0 +1,163 @@
+// This solution implements the A method
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define  W_SIZE  100
+
+typedef struct wordS {
+  char *word;
+  int freq;
+  struct wordS *nextp;
+} wordT;
+
+wordT *listCreate (FILE *);
+int compareStrings(char *, char *);
+wordT *findWord (wordT *, char *);
+void cleanWord (char *);
+void writeList (wordT *, FILE *);
+void cleanUp (wordT *);
+wordT *push (wordT *, char *);
+
+int main (int argc, char *argv[]) {
+  FILE  *fpR, *fpW;
+  wordT  *headP;
+  headP = NULL;
+  if ( argc > 2 ) {
+    fpR = fopen (argv[1], "r");
+    fpW = fopen (argv[2], "w");
+    if (fpR==NULL || fpW==NULL) {
+      printf("Error Opening Files.\n");
+      return(1);
+    }
+
+    headP = listCreate(fpR);
+
+    writeList(headP, fpW);
+
+    fclose(fpR);
+    fclose(fpW);
+    cleanUp(headP);
+  } else {
+    printf("Wrong Parameters.\n");
+  }
+
+  return(0);
+}
+
+wordT * listCreate ( FILE *fp ) {
+  wordT *headP = NULL, *tmpP;
+  char buffer[W_SIZE+3];
+
+  while ( (fscanf(fp, "%s", buffer))!=EOF ) {
+    cleanWord(buffer);
+    tmpP = findWord(headP, buffer);
+    if ( tmpP !=NULL ) {
+      tmpP->freq++;
+    } else {
+      headP = push (headP, buffer);
+    }
+  }
+  return(headP);
+}
+
+wordT *push (wordT *headP, char *buffer) {
+  wordT *newP;
+
+  newP = malloc (1*sizeof (wordT));
+  if (newP == NULL) {
+    printf("Allocation Error.\n");
+    exit(1);
+  }
+  newP->word = malloc((strlen(buffer)+1)*sizeof(char));
+  if ( newP->word == NULL ) {
+    printf("Allocation Error.\n");
+    exit(1);
+  }
+  strcpy (newP->word, buffer);
+  newP->freq = 1;
+  newP->nextp = headP;
+
+  return (newP);
+}
+
+// this function removes all characters that are:
+// NOT alphabetic characters
+// OR NOT numbers
+void cleanWord ( char *word ) {
+  int  i, j, n;
+
+  n = strlen(word);
+  for ( i=0; word[i] != '\0'; ) {
+    if ( !isalpha(word[i]) && !isdigit(word[i]) ) {
+      // we now remove the i-th character by moving all the
+      // following characters
+      for ( j=i; j<n; j++) {
+        word[j]=word[j+1];
+      }
+    } else {
+      // NOTE this. why is i++ in the else branch?
+      i++;
+    }
+  }
+}
+
+int compareStrings(char *a, char *b) {
+  int i;
+  if( strlen(a) != strlen(b) )
+    return 0;
+  for(i = 0; i < strlen(a); i++ ) {
+    if( tolower(a[i]) != tolower(b[i]) )
+      return 0;
+  }
+  return 1;
+}
+
+wordT *findWord ( wordT *headP, char *word ) {
+  wordT *tmpP;
+  int found;
+
+  tmpP = headP;
+  while ( tmpP!=NULL ) {
+    found = wrdcmp(word,tmpP->word);
+    if( found == 1 )
+      break;
+    tmpP = tmpP->nextp;
+  }
+
+  if (!found) {
+    tmpP = NULL;
+  }
+
+  return(tmpP);
+}
+
+
+void cleanUp ( wordT *headP ) {
+  wordT *tmpP, *l_Next;
+
+  tmpP = headP;
+
+  while ( tmpP != NULL ) {
+    l_Next = tmpP->nextp;
+    free(tmpP);
+    tmpP = l_Next;
+  }
+
+  headP = NULL;
+  return;
+}
+
+void writeList ( wordT *headP, FILE *fp ) {
+  wordT  *tmpP;
+
+  tmpP = headP;
+  while ( tmpP != NULL ) {
+    fprintf(fp, "%s %d\n", tmpP->word, tmpP->freq);
+    tmpP = tmpP->nextp;
+  }
+
+  return;
+}
